@@ -1,4 +1,4 @@
-import { ORDERBOOK_LEVELS } from "../OrderBook";
+const ORDERBOOK_LEVELS = 15
 
 export const removePriceLevel = (price: number, levels: number[][]): number[][] => levels.filter(level => level[0] !== price);
 

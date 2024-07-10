@@ -1,27 +1,22 @@
 import React, { useEffect, useState, useCallback } from "react";
 import useWebSocket from "react-use-websocket";
 
-export const ORDERBOOK_LEVELS: number = 25;
+const ORDERBOOK_LEVELS: number = 15;
 
-export const ProductsMap: Record<string, string> = {
+const ProductsMap: Record<string, string> = {
   PI_XBTUSD: "PI_ETHUSD",
   PI_ETHUSD: "PI_XBTUSD",
 };
 
-export const ProductIds = {
+const ProductIds = {
   XBTUSD: "PI_XBTUSD",
   ETHUSD: "PI_ETHUSD",
 };
 
-export enum OrderType {
-  BIDS,
-  ASKS,
-}
-
-interface OrderBookProps {
-  windowWidth: number;
-  productId: string;
-  isFeedKilled: boolean;
+interface OrderBookEntry {
+  price: number;
+  size: number;
+  total: number;
 }
 
 interface Delta {
@@ -29,24 +24,54 @@ interface Delta {
   asks?: number[][];
 }
 
-let currentBids: number[][] = [];
-let currentAsks: number[][] = [];
+const WSS_FEED_URL: string = "wss://www.cryptofacilities.com/ws/v1";
 
-export default function OrderBook() {
-  const [productId, setProductId] = useState(ProductIds.XBTUSD);
+const useOrderBook = (initialProductId: string) => {
+  const [productId, setProductId] = useState(initialProductId);
+  const [currentBids, setCurrentBids] = useState<OrderBookEntry[]>([]);
+  const [currentAsks, setCurrentAsks] = useState<OrderBookEntry[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const WSS_FEED_URL: string = "wss://www.cryptofacilities.com/ws/v1";
-
-  const { sendJsonMessage, getWebSocket } = useWebSocket(WSS_FEED_URL, {
+  const { sendJsonMessage } = useWebSocket(WSS_FEED_URL, {
     onOpen: () => console.log("WebSocket connection opened."),
     onClose: () => console.log("WebSocket connection closed."),
-    shouldReconnect: (closeEvent) => true,
-    onMessage: (event: WebSocketEventMap["message"]) =>
-      process(JSON.parse(event.data)),
+    shouldReconnect: () => true,
+    onMessage: (event: WebSocketEventMap["message"]) => {
+      const data = JSON.parse(event.data);
+      processOrderBookData(data);
+    },
   });
 
+  const processOrderBookData = useCallback((data: Delta) => {
+    if (data.bids && data.bids.length > 0) {
+      const updatedBids = data.bids.map(([price, size]) => ({ price, size, total: 0 }));
+      setCurrentBids((prevBids) => {
+        const mergedBids = [...prevBids, ...updatedBids].slice(-ORDERBOOK_LEVELS);
+        return calculateTotal(mergedBids);
+      });
+    }
+
+    if (data.asks && data.asks.length > 0) {
+      const updatedAsks = data.asks.map(([price, size]) => ({ price, size, total: 0 }));
+      setCurrentAsks((prevAsks) => {
+        const mergedAsks = [...prevAsks, ...updatedAsks].slice(-ORDERBOOK_LEVELS);
+        return calculateTotal(mergedAsks);
+      });
+    }
+
+    setLoading(false);
+  }, []);
+
+  const calculateTotal = (entries: OrderBookEntry[]): OrderBookEntry[] => {
+    let cumulativeTotal = 0;
+    return entries.map((entry) => {
+      cumulativeTotal += entry.size;
+      return { ...entry, total: cumulativeTotal };
+    });
+  };
+
   useEffect(() => {
-    function connect(product: string) {
+    const connect = (product: string) => {
       const unSubscribeMessage = {
         event: "unsubscribe",
         feed: "book_ui_1",
@@ -60,33 +85,19 @@ export default function OrderBook() {
         product_ids: [product],
       };
       sendJsonMessage(subscribeMessage);
-    }
+    };
 
     connect(productId);
-  }, [productId, sendJsonMessage, getWebSocket]);
+  }, [productId, sendJsonMessage]);
 
-  const process = useCallback((data: Delta) => {
-    if (Array.isArray(data.bids) && data.bids.length > 0) {
-      currentBids = [...currentBids, ...data.bids];
+  return { currentBids, currentAsks, loading, setProductId };
+};
 
-      if (currentBids.length > ORDERBOOK_LEVELS) {
-        currentBids = currentBids.slice(-ORDERBOOK_LEVELS);
-      }
-      return currentBids;
-    }
+const OrderBook: React.FC = () => {
+  const { currentBids, currentAsks, loading } = useOrderBook(ProductIds.XBTUSD);
 
-    if (Array.isArray(data.asks) && data.asks.length > 0) {
-      currentAsks = [...currentAsks, ...data.asks];
-
-      if (currentAsks.length > ORDERBOOK_LEVELS) {
-        currentAsks = currentAsks.slice(-ORDERBOOK_LEVELS);
-      }
-      return currentAsks;
-    }
-  }, []);
-
-  const formatPrice = (arg: number): string => {
-    return arg.toLocaleString("en", {
+  const formatPrice = (price: number): string => {
+    return price?.toLocaleString("en", {
       useGrouping: true,
       minimumFractionDigits: 2,
     });
@@ -94,22 +105,33 @@ export default function OrderBook() {
 
   return (
     <div>
-      <div>
-        <h3>Bids</h3>
-        {currentBids.map((bid, index) => (
-          <div key={index}>
-            Price: {formatPrice(bid[0])}, Size: {bid[1]}
-          </div>
-        ))}
-      </div>
-      <div>
-        <h3>Asks</h3>
-        {currentAsks.map((ask, index) => (
-          <div key={index}>
-            Price: {formatPrice(ask[0])}, Size: {ask[1]}
-          </div>
-        ))}
-      </div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <OrderBookList title="Bids" entries={currentBids} formatPrice={formatPrice} />
+          <OrderBookList title="Asks" entries={currentAsks} formatPrice={formatPrice} />
+        </>
+      )}
     </div>
   );
+};
+
+interface OrderBookListProps {
+  title: string;
+  entries: OrderBookEntry[];
+  formatPrice: (price: number) => string;
 }
+
+const OrderBookList: React.FC<OrderBookListProps> = ({ title, entries, formatPrice }) => (
+  <div>
+    <h3>{title}</h3>
+    {entries.map((entry, index) => (
+      <div key={index}>
+        Price: {formatPrice(entry.price) || "N/A"}, Size: {entry.size}, Total: {entry.total}
+      </div>
+    ))}
+  </div>
+);
+
+export default OrderBook;
