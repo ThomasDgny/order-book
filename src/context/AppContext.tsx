@@ -47,6 +47,32 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({children}
     // Example: notifyUser(orderId);
   };
 
+
+  const checkOrderMatches = () => {
+    setOrderHistory(prevOrders =>
+      prevOrders.map(order => {
+        if (order.status === "Pending") {
+          if (order.orderType === "BUY_LIMIT") {
+            const matchingAsk = currentAsks.find(ask => ask.price <= order.price);
+            if (matchingAsk) {
+              completeOrder(order.orderId);
+              // Notify user
+              console.log(`Your BUY LIMIT order for ${order.pair} is completed`);
+            }
+          } else if (order.orderType === "SELL_LIMIT") {
+            const matchingBid = currentBids.find(bid => bid.price >= order.price);
+            if (matchingBid) {
+              completeOrder(order.orderId);
+              // Notify user
+              console.log(`Your SELL LIMIT order for ${order.pair} is completed`);
+            }
+          }
+        }
+        return order;
+      })
+    );
+  };
+
   const contextValue: AppContextType = {
     selectedPair,
     balance,
@@ -58,7 +84,6 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({children}
     loading,
     orderHistory,
     createOrder,
-    completeOrder,
     cancelOrder,
   };
 

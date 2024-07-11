@@ -43,6 +43,5 @@ export interface AppContextType {
   loading: boolean;
   orderHistory: Order[];
   createOrder: (order: Order) => void;
-  completeOrder: (orderId: string) => void;
   cancelOrder: (orderId: string) => void;
 }

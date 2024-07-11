@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import LimitOrderForm from "./_components/LimitOrder";
-import MarketOrderForm from "./_components/MarketOrder";
+import MarketOrder from "./_components/marketOrder/MarketOrder";
+import LimitOrder from "./_components/limitOrder/LimitOrder";
 
 const OrderComponent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"limit" | "market">("limit");
@@ -12,8 +12,8 @@ const OrderComponent: React.FC = () => {
         <button onClick={() => setActiveTab("market")}>Market</button>
       </div>
       <div className="flex justify-around mb-4">
-        {activeTab === "limit" && <LimitOrderForm />}
-        {activeTab === "market" && <MarketOrderForm />}
+        {activeTab === "limit" && <LimitOrder />}
+        {activeTab === "market" && <MarketOrder />}
       </div>
     </div>
   );
