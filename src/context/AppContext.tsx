@@ -1,11 +1,4 @@
-import React, {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { AppContextType, Order } from "../types/types";
 import { useOrderBook } from "../hooks/useOrderBook";
 import { ProductIds } from "../constants/constants";
@@ -20,68 +13,44 @@ export const useAppContext = () => {
   return context;
 };
 
-export const AppContextProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [selectedPair, setSelectedPair] = useState(ProductIds.XBTUSD);
-  const [balance, setBalance] = useState(1000000000);
-  const [orderHistory, setOrderHistory] = useState<Order[]>([]);
-  const { currentBids, currentAsks, currentIndex, loading } =
-    useOrderBook(selectedPair);
+const INITIAL_BALANCE = 1000000;
+const INITIAL_PAIR = ProductIds.XBTUSD;
 
-  const setPair = (pair: string) => {
-    setSelectedPair(pair);
-  };
+export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [selectedPair, setSelectedPair] = useState<string>(INITIAL_PAIR);
+  const [balance, setBalance] = useState<number>(INITIAL_BALANCE);
+  const [orderHistory, setOrderHistory] = useState<Order[]>([]);
+  const { currentBids, currentAsks , currentIndex, loading } = useOrderBook(selectedPair);
+
+  const setPair = (pair: string) => setSelectedPair(pair);
 
   const createOrder = (order: Order) => {
     const cost = order.price * order.quantity;
-    console.log(`Creating order: ${JSON.stringify(order)}`);
-
-    if (order.orderType === "BUY_LIMIT") {
-      if (balance >= cost) {
-        setBalance((prevBalance) => prevBalance - cost);
-        setOrderHistory((prevOrders) => [
-          ...prevOrders,
-          { ...order, status: "Pending" },
-        ]);
-      } else {
-        console.error("Insufficient balance for the order.");
-      }
+    if (order.orderType === "BUY_LIMIT" && balance >= cost) {
+      setBalance(prevBalance => prevBalance - cost);
+      setOrderHistory(prevOrders => [...prevOrders, order]);
+    } else if (order.orderType === "SELL_LIMIT") {
+      setOrderHistory(prevOrders => [...prevOrders, order]);
+    } else {
+      console.error("Insufficient balance for the order.");
     }
-
-    if (order.orderType === "SELL_LIMIT") {
-      setOrderHistory((prevOrders) => [
-        ...prevOrders,
-        { ...order, status: "Pending" },
-      ]);
-    }
-
-    setTimeout(() => {
-      checkOrderMatches();
-    }, 100);
   };
 
-  const completeOrder = useCallback((orderId: string) => {
-    console.log(`Completing order: ${orderId}`);
-    setOrderHistory((prevOrders) =>
-      prevOrders.map((order) =>
-        order.orderId === orderId
-          ? { ...order, status: "Filled", completionDate: new Date() }
-          : order
+  const completeOrder = (orderId: string) => {
+    setOrderHistory(prevOrders =>
+      prevOrders.map(order =>
+        order.orderId === orderId ? { ...order, status: "Filled", completionDate: new Date() } : order
       )
     );
-  }, []);
+  };
 
   const cancelOrder = (orderId: string) => {
-    console.log(`Canceling order: ${orderId}`);
-    setOrderHistory((prevOrders) =>
-      prevOrders.map((order) => {
+    setOrderHistory(prevOrders =>
+      prevOrders.map(order => {
         if (order.orderId === orderId && order.status !== "Filled") {
-          if (order.status === "Pending") {
+          if (order.status === "Pending" && order.orderType === "BUY_LIMIT") {
             const refund = order.price * order.quantity;
-            if (order.orderType === "BUY_LIMIT") {
-              setBalance((prevBalance) => prevBalance + refund);
-            }
+            setBalance(prevBalance => prevBalance + refund);
           }
           return { ...order, status: "Canceled", completionDate: new Date() };
         }
@@ -90,69 +59,46 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({
     );
   };
 
-  const matchOrder = useCallback(
-    (order: Order) => {
-      if (order.orderType === "BUY_LIMIT") {
-        const matchingAsk = currentAsks.find((ask) => ask.price === order.price);
-        console.log(
-          `Checking SELL_LIMIT order. Order Price: ${
-            order.price
-          }, Matching Bid: ${matchingAsk ? matchingAsk.price : "No match"}`
-        );
-        if (matchingAsk) {
-          completeOrder(order.orderId);
-          console.log(`Your BUY LIMIT order for ${order.pair} is completed`);
-        }
-      } else if (order.orderType === "SELL_LIMIT") {
-        const matchingBid = currentBids.find((bid) => bid.price === order.price);
-        console.log(
-          `Checking SELL_LIMIT order. Order Price: ${
-            order.price
-          }, Matching Bid: ${matchingBid ? matchingBid.price : "No match"}`
-        );
-        if (matchingBid) {
-          completeOrder(order.orderId);
-          const profit = order.price * order.quantity;
-          setBalance((prevBalance) => prevBalance + profit);
-          console.log(`Your SELL LIMIT order for ${order.pair} is completed`);
-        }
-      }
-    },
-    [currentAsks, currentBids, completeOrder]
-  );
-
-  const checkOrderMatches = useCallback(() => {
-    console.log("Checking order matches");
-    setOrderHistory((prevOrders) => {
-      const updatedOrders = prevOrders.map((order) => {
+  const checkOrderMatches = () => {
+    setOrderHistory(prevOrders =>
+      prevOrders.map(order => {
         if (order.status === "Pending") {
-          matchOrder(order);
+          if (order.orderType === "BUY_LIMIT") {
+            const matchingAsk = currentAsks.find(ask => ask.price <= order.price);
+            if (matchingAsk) completeOrder(order.orderId);
+          } else if (order.orderType === "SELL_LIMIT") {
+            const matchingBid = currentBids.find(bid => bid.price >= order.price);
+            if (matchingBid) {
+              completeOrder(order.orderId);
+              const profit = order.price * order.quantity;
+              setBalance(prevBalance => prevBalance + profit);
+            }
+          }
         }
         return order;
-      });
-      return updatedOrders;
-    });
-  }, [matchOrder]);
+      })
+    );
+  };
+
 
   useEffect(() => {
+
     checkOrderMatches();
-  }, [currentBids, currentAsks, checkOrderMatches]);
+  }, [currentBids, currentAsks]);
 
   const contextValue: AppContextType = {
+    loading,
+    currentIndex,
     selectedPair,
     balance,
     setBalance,
     setPair,
     currentBids,
     currentAsks,
-    currentIndex,
-    loading,
     orderHistory,
     createOrder,
     cancelOrder,
   };
 
-  return (
-    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
-  );
+  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
 };
