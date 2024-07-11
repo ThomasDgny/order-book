@@ -33,23 +33,23 @@ export const useOrderBook = (initialProductId: string) => {
     (data: Delta) => {
       let updatedBids = currentBids.map(({ price, size }) => [price, size]);
       let updatedAsks = currentAsks.map(({ price, size }) => [price, size]);
-
+  
       if (data.bids && data.bids.length > 0) {
-        updatedBids = applyDeltas(updatedBids, data.bids.filter(([price, size]) => size > 0));
+        updatedBids = applyDeltas(updatedBids, data.bids);
         const updatedBidEntries = addTotalSums(updatedBids).map(
           ([price, size, total]) => ({ price, size, total })
         );
         setCurrentBids(updatedBidEntries);
       }
-
+  
       if (data.asks && data.asks.length > 0) {
-        updatedAsks = applyDeltas(updatedAsks, data.asks.filter(([price, size]) => size > 0));
+        updatedAsks = applyDeltas(updatedAsks, data.asks);
         const updatedAskEntries = addTotalSums(updatedAsks).map(
           ([price, size, total]) => ({ price, size, total })
         );
         setCurrentAsks(updatedAskEntries);
       }
-
+  
       if (updatedBids.length > 0 && updatedAsks.length > 0) {
         const index = calculateMidpointPrice(
           updatedBids.map(([price, size]) => ({ price, size, total: 0 })),
@@ -57,11 +57,12 @@ export const useOrderBook = (initialProductId: string) => {
         );
         setCurrentIndex(index);
       }
-
+  
       setLoading(false);
     },
     [currentBids, currentAsks]
   );
+  
 
   useEffect(() => {
     const connect = (product: string) => {

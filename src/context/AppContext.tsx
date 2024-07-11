@@ -13,9 +13,9 @@ export const useAppContext = () => {
   return context;
 };
 
-export const AppContextProvider: React.FC<{ children: ReactNode }> = ({children}) => {
+export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [selectedPair, setSelectedPair] = useState(ProductIds.XBTUSD);
-  const [balance, setBalance] = useState(1000000000);
+  const [balance, setBalance] = useState(1000000);
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
   const { currentBids, currentAsks, currentIndex, loading } = useOrderBook(selectedPair);
 
@@ -24,30 +24,45 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({children}
   };
 
   const createOrder = (order: Order) => {
-    const newOrder: Order = order;
-    setOrderHistory([...orderHistory, newOrder]);
+    const cost = order.price * order.quantity;
+    if (order.orderType === "BUY_LIMIT" && balance >= cost) {
+      setBalance(balance - cost);
+      const newOrder: Order = order;
+      setOrderHistory([...orderHistory, newOrder]);
+    } else if (order.orderType === "SELL_LIMIT") {
+      const newOrder: Order = order;
+      setOrderHistory([...orderHistory, newOrder]);
+    } else {
+      console.error("Insufficient balance for the order.");
+    }
   };
 
   const completeOrder = (orderId: string) => {
     setOrderHistory(prevOrders =>
       prevOrders.map(order =>
-        order.orderId === orderId ? { ...order,  status: "Filled",  completionDate: new Date() } : order )
+        order.orderId === orderId ? { ...order, status: "Filled", completionDate: new Date() } : order
+      )
     );
-    // Implement notification logic here
-    // Example: notifyUser(orderId);
   };
 
   const cancelOrder = (orderId: string) => {
     setOrderHistory(prevOrders =>
-      prevOrders.map(order =>
-        order.orderId === orderId && order.status !== "Filled"
-          ? { ...order, status: "Canceled", completionDate: new Date() } : order )
+      prevOrders.map(order => {
+        if (order.orderId === orderId && order.status !== "Filled") {
+          if (order.status === "Pending") {
+            const refund = order.price * order.quantity;
+            if (order.orderType === "BUY_LIMIT") {
+              setBalance(balance + refund);
+            }
+          }
+          return { ...order, status: "Canceled", completionDate: new Date() };
+        }
+        return order;
+      })
     );
-    // Implement notification logic here
-    // Example: notifyUser(orderId);
   };
 
-const checkOrderMatches = () => {
+  const checkOrderMatches = () => {
     setOrderHistory(prevOrders =>
       prevOrders.map(order => {
         if (order.status === "Pending") {
@@ -55,14 +70,14 @@ const checkOrderMatches = () => {
             const matchingAsk = currentAsks.find(ask => ask.price <= order.price);
             if (matchingAsk) {
               completeOrder(order.orderId);
-              // Notify user
               console.log(`Your BUY LIMIT order for ${order.pair} is completed`);
             }
           } else if (order.orderType === "SELL_LIMIT") {
             const matchingBid = currentBids.find(bid => bid.price >= order.price);
             if (matchingBid) {
               completeOrder(order.orderId);
-              // Notify user
+              const profit = order.price * order.quantity;
+              setBalance(balance + profit);
               console.log(`Your SELL LIMIT order for ${order.pair} is completed`);
             }
           }
