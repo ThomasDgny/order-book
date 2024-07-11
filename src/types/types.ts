@@ -9,6 +9,16 @@ export interface Delta {
   asks?: number[][];
 }
 
+export interface OrderbookState {
+  market: string;
+  rawBids: number[][];
+  bids: number[][];
+  maxTotalBids: number;
+  rawAsks: number[][];
+  asks: number[][];
+  maxTotalAsks: number;
+  groupingSize: number;
+}
 
 export interface Order {
   orderId: number;
@@ -23,16 +33,18 @@ export interface Order {
 }
 
 export interface AppContextType {
-    selectedPair: string;
-    balance: number;
-    setBalance: React.Dispatch<React.SetStateAction<number>>;
-    setPair: (pair: string) => void;
-    currentBids: OrderBookEntry[];
-    currentAsks: OrderBookEntry[];
-    currentIndex: number;
-    loading: boolean;
-    orderHistory: Order[];
-    createOrder: (order: Omit<Order, "orderId" | "completionDate" | "status">) => void;
-    completeOrder: (orderId: number) => void;
-    cancelOrder: (orderId: number) => void;
-  }
+  selectedPair: string;
+  balance: number;
+  setBalance: React.Dispatch<React.SetStateAction<number>>;
+  setPair: (pair: string) => void;
+  currentBids: OrderBookEntry[];
+  currentAsks: OrderBookEntry[];
+  currentIndex: number;
+  loading: boolean;
+  orderHistory: Order[];
+  createOrder: (
+    order: Omit<Order, "orderId" | "completionDate" | "status">
+  ) => void;
+  completeOrder: (orderId: number) => void;
+  cancelOrder: (orderId: number) => void;
+}

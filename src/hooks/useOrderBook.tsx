@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { addTotalSums, applyDeltas } from "../components/home/orderBook/_helper/helper";
+import { addTotalSums, applyDeltas } from "../helper/orderBook";
 import { ProductsMap, WSS_FEED_URL } from "../constants/constants";
 import { Delta, OrderBookEntry } from "../types/types";
 import useWebSocket from "react-use-websocket";

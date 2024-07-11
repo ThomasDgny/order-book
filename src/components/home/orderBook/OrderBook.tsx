@@ -1,30 +1,10 @@
 import React from "react";
 import { OrderBookEntry } from "../../../types/types";
 import { useAppContext } from "../../../context/AppContext";
+import { formatNumber } from "../../../helper/orderBook";
 
 const OrderBook: React.FC = () => {
   const { currentBids, currentAsks, loading } = useAppContext();
-
-  const formatPrice = (price: number): string => {
-    return price?.toLocaleString("en", {
-      useGrouping: true,
-      minimumFractionDigits: 4,
-    });
-  };
-
-  const formatSize = (size: number): string => {
-    return size?.toLocaleString("en", {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-    });
-  };
-
-  const formatTotal = (total: number): string => {
-    return total.toLocaleString("en", {
-      useGrouping: true,
-      minimumFractionDigits: 2,
-    });
-  };
 
   return (
     <div>
@@ -35,16 +15,12 @@ const OrderBook: React.FC = () => {
           <OrderBookList
             title="Asks"
             entries={currentAsks}
-            formatPrice={formatPrice}
-            formatSize={formatSize}
-            formatTotal={formatTotal}
+            formatNumber={formatNumber}
           />
           <OrderBookList
             title="Bids"
             entries={currentBids}
-            formatPrice={formatPrice}
-            formatSize={formatSize}
-            formatTotal={formatTotal}
+            formatNumber={formatNumber}
           />
         </>
       )}
@@ -55,25 +31,21 @@ const OrderBook: React.FC = () => {
 interface OrderBookListProps {
   title: string;
   entries: OrderBookEntry[];
-  formatPrice: (price: number) => string;
-  formatSize: (size: number) => string;
-  formatTotal: (total: number) => string;
+  formatNumber: (numb: number,digits: number) => string;
 }
 
 const OrderBookList: React.FC<OrderBookListProps> = ({
   title,
   entries,
-  formatPrice,
-  formatSize,
-  formatTotal,
+  formatNumber,
 }) => (
   <div>
     <h3>{title}</h3>
     {entries.map((entry, index) => (
       <div key={index}>
-        <span>Price:{formatPrice(entry.price)}</span>{" "}
-        <span>Amount: {formatSize(entry.size)}</span>{" "}
-        <span>Total: {formatTotal(entry.total)}</span>{" "}
+        <span>Price:{formatNumber(entry.price, 4)}</span>{" "}
+        <span>Amount: {formatNumber(entry.size, 0)}</span>{" "}
+        <span>Total: {formatNumber(entry.total, 2)}</span>{" "}
       </div>
     ))}
   </div>
