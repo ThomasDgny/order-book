@@ -46,10 +46,10 @@ const applyDeltas = (
     const deltaLevelPrice = deltaLevel[0];
     const deltaLevelSize = deltaLevel[1];
 
-    if (deltaLevelSize === 0 && updatedLevels.length > ORDERBOOK_LEVELS) {
+    if (deltaLevelSize === 0) {
       updatedLevels = removePriceLevel(deltaLevelPrice, updatedLevels);
     } else {
-      if (levelExists(deltaLevelPrice, currentLevels)) {
+      if (levelExists(deltaLevelPrice, updatedLevels)) {
         updatedLevels = updatePriceLevel(deltaLevel, updatedLevels);
       } else {
         if (updatedLevels.length < ORDERBOOK_LEVELS) {
@@ -81,4 +81,4 @@ const formatNumber = (num: number, digits: number): string => {
   });
 };
 
-export { initialState, applyDeltas, addTotalSums, formatNumber  };
+export { initialState, applyDeltas, addTotalSums, formatNumber };

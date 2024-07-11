@@ -35,7 +35,7 @@ export const useOrderBook = (initialProductId: string) => {
       let updatedAsks = currentAsks.map(({ price, size }) => [price, size]);
 
       if (data.bids && data.bids.length > 0) {
-        updatedBids = applyDeltas(updatedBids, data.bids);
+        updatedBids = applyDeltas(updatedBids, data.bids.filter(([price, size]) => size > 0));
         const updatedBidEntries = addTotalSums(updatedBids).map(
           ([price, size, total]) => ({ price, size, total })
         );
@@ -43,7 +43,7 @@ export const useOrderBook = (initialProductId: string) => {
       }
 
       if (data.asks && data.asks.length > 0) {
-        updatedAsks = applyDeltas(updatedAsks, data.asks);
+        updatedAsks = applyDeltas(updatedAsks, data.asks.filter(([price, size]) => size > 0));
         const updatedAskEntries = addTotalSums(updatedAsks).map(
           ([price, size, total]) => ({ price, size, total })
         );

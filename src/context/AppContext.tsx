@@ -1,4 +1,4 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { AppContextType, Order } from "../types/types";
 import { useOrderBook } from "../hooks/useOrderBook";
 import { ProductIds } from "../constants/constants";
@@ -47,8 +47,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({children}
     // Example: notifyUser(orderId);
   };
 
-
-  const checkOrderMatches = () => {
+const checkOrderMatches = () => {
     setOrderHistory(prevOrders =>
       prevOrders.map(order => {
         if (order.status === "Pending") {
@@ -72,6 +71,10 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({children}
       })
     );
   };
+
+  useEffect(() => {
+    checkOrderMatches();
+  }, [currentBids, currentAsks]);
 
   const contextValue: AppContextType = {
     selectedPair,
