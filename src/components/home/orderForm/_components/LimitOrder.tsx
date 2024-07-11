@@ -1,43 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useAppContext } from "../../../../context/AppContext";
+import { v4 as uuidv4 } from 'uuid';
+import { Order } from "../../../../types/types";
 
-
-interface Order {
-  orderType: string;
-  price: number;
-  quantity: number;
-  total: number;
-  creationDate: Date;
-  completionDate: Date | null;
-  status: string;
-}
 
 const LimitOrderForm: React.FC = () => {
-  const { currentIndex, balance } = useAppContext();
-  
+  const { currentIndex, balance, selectedPair, createOrder } = useAppContext();
+
   const [buyPrice, setBuyPrice] = useState<number>(currentIndex);
   const [buyQuantity, setBuyQuantity] = useState<number>(0);
   const [buyTotal, setBuyTotal] = useState<number>(0);
   const [sellPrice, setSellPrice] = useState<number>(0);
   const [sellQuantity, setSellQuantity] = useState<number>(0);
   const [sellTotal, setSellTotal] = useState<number>(0);
-  const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
     setBuyPrice(currentIndex);
     setSellPrice(currentIndex);
   }, [currentIndex]);
 
-  const handleBuySubmit = () => {
-    if (
-      typeof buyPrice === "number" &&
-      typeof buyQuantity === "number" &&
-      buyPrice * buyQuantity > balance
-    )
-      return;
+  const handleOrderSubmit = (orderType: Order["orderType"]) => {
+    if (typeof buyPrice === "number" && typeof buyQuantity === "number" && buyPrice * buyQuantity > balance) return;
+    if (typeof sellPrice === "number" && typeof sellQuantity === "number" && sellPrice * sellQuantity > balance) return;
+
+    const orderID = uuidv4()
 
     const newOrder: Order = {
-      orderType: "BUY_LIMIT",
+      pair: selectedPair,
+      orderId: orderID ,
+      orderType: orderType,
       price: buyPrice,
       quantity: buyQuantity,
       total: buyPrice * buyQuantity,
@@ -45,26 +36,10 @@ const LimitOrderForm: React.FC = () => {
       completionDate: null,
       status: "Pending",
     };
-    setOrders([...orders, newOrder]);
-    setBuyPrice(0);
+    
+    createOrder(newOrder);
     setBuyQuantity(0);
     setBuyTotal(0);
-  };
-
-  const handleSellSubmit = () => {
-    if (typeof sellQuantity === "number" && sellQuantity > balance) return;
-
-    const newOrder: Order = {
-      orderType: "SELL_LIMIT",
-      price: sellPrice as number,
-      quantity: sellQuantity,
-      total: (sellPrice as number) * sellQuantity,
-      creationDate: new Date(),
-      completionDate: null,
-      status: "Pending",
-    };
-    setOrders([...orders, newOrder]);
-    setSellPrice(0);
     setSellQuantity(0);
     setSellTotal(0);
   };
@@ -110,7 +85,7 @@ const LimitOrderForm: React.FC = () => {
             />
           </div>
           <button
-            onClick={handleBuySubmit}
+            onClick={() => handleOrderSubmit("BUY_LIMIT")}
             disabled={
               typeof buyPrice === "number" &&
               typeof buyQuantity === "number" &&
@@ -151,7 +126,7 @@ const LimitOrderForm: React.FC = () => {
             />
           </div>
           <button
-            onClick={handleSellSubmit}
+            onClick={() => handleOrderSubmit("SELL_LIMIT")}
             disabled={
               typeof sellQuantity === "number" && sellQuantity > balance
             }

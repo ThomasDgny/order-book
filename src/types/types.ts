@@ -21,7 +21,7 @@ export interface OrderbookState {
 }
 
 export interface Order {
-  orderId: number;
+  orderId: string;
   orderType: "BUY_LIMIT" | "SELL_LIMIT" | "MARKET_BUY" | "MARKET_SELL";
   pair: string;
   price: number;
@@ -42,9 +42,7 @@ export interface AppContextType {
   currentIndex: number;
   loading: boolean;
   orderHistory: Order[];
-  createOrder: (
-    order: Omit<Order, "orderId" | "completionDate" | "status">
-  ) => void;
-  completeOrder: (orderId: number) => void;
-  cancelOrder: (orderId: number) => void;
+  createOrder: (order: Order) => void;
+  completeOrder: (orderId: string) => void;
+  cancelOrder: (orderId: string) => void;
 }
