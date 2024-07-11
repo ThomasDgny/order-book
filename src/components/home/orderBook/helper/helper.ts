@@ -42,15 +42,12 @@ const applyDeltas = (currentLevels: number[][], orders: number[][]): number[][] 
     const deltaLevelPrice = deltaLevel[0];
     const deltaLevelSize = deltaLevel[1];
 
-    // If new size is zero - delete the price level
     if (deltaLevelSize === 0 && updatedLevels.length > ORDERBOOK_LEVELS) {
       updatedLevels = removePriceLevel(deltaLevelPrice, updatedLevels);
     } else {
-      // If the price level exists and the size is not zero, update it
       if (levelExists(deltaLevelPrice, currentLevels)) {
         updatedLevels = updatePriceLevel(deltaLevel, updatedLevels);
       } else {
-        // If the price level doesn't exist in the orderbook and there are less than 25 levels, add it
         if (updatedLevels.length < ORDERBOOK_LEVELS) {
           updatedLevels = addPriceLevel(deltaLevel, updatedLevels);
         }

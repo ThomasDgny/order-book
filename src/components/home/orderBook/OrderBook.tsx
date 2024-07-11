@@ -1,7 +1,7 @@
 import React from "react";
-import { ProductIds } from "../../constants/constants";
-import { useOrderBook } from "../../hooks/useOrderBook";
-import { OrderBookEntry } from "../../types/types";
+import { ProductIds } from "../../../constants/constants";
+import { useOrderBook } from "../../../hooks/useOrderBook";
+import { OrderBookEntry } from "../../../types/types";
 
 const OrderBook: React.FC = () => {
   const { currentBids, currentAsks, loading } = useOrderBook(ProductIds.XBTUSD);
