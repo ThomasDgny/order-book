@@ -26,28 +26,40 @@ const removePriceLevel = (price: number, levels: number[][]): number[][] =>
   levels.filter((level) => level[0] !== price);
 
 const updatePriceLevel = (updatedLevel: number[], levels: number[][]): number[][] => {
-  return levels.map((level) => (level[0] === updatedLevel[0] ? updatedLevel : level));
+  return levels.map((level) => (level[0] === updatedLevel[0] ? updatedLevel : level));  
+};
+
+const levelExists = (deltaLevelPrice: number, currentLevels: number[][]): boolean => currentLevels.some(level => level[0] === deltaLevelPrice);
+
+const addPriceLevel = (deltaLevel: number[], levels: number[][]): number[][] => {
+  return [ ...levels, deltaLevel ];
 };
 
 const applyDeltas = (currentLevels: number[][], orders: number[][]): number[][] => {
   let updatedLevels: number[][] = currentLevels;
 
   orders.forEach((deltaLevel) => {
-    const [deltaLevelPrice, deltaLevelSize] = deltaLevel;
+    const deltaLevelPrice = deltaLevel[0];
+    const deltaLevelSize = deltaLevel[1];
 
-    if (deltaLevelSize === 0) {
+    // If new size is zero - delete the price level
+    if (deltaLevelSize === 0 && updatedLevels.length > ORDERBOOK_LEVELS) {
       updatedLevels = removePriceLevel(deltaLevelPrice, updatedLevels);
     } else {
-      if (updatedLevels.some((level) => level[0] === deltaLevelPrice)) {
+      // If the price level exists and the size is not zero, update it
+      if (levelExists(deltaLevelPrice, currentLevels)) {
         updatedLevels = updatePriceLevel(deltaLevel, updatedLevels);
-      } else if (updatedLevels.length < ORDERBOOK_LEVELS) {
-        updatedLevels = [...updatedLevels, deltaLevel];
+      } else {
+        // If the price level doesn't exist in the orderbook and there are less than 25 levels, add it
+        if (updatedLevels.length < ORDERBOOK_LEVELS) {
+          updatedLevels = addPriceLevel(deltaLevel, updatedLevels);
+        }
       }
     }
   });
 
   return updatedLevels;
-};
+}
 
 const calculateTotal = (entries: number[][]): number[][] => {
   let cumulativeTotal = 0;

@@ -70,7 +70,7 @@ const OrderBookList: React.FC<OrderBookListProps> = ({
     {entries.map((entry, index) => (
       <div key={index}>
         <span>Price:{formatPrice(entry.price)}</span>{" "}
-        <span>Amount: {formatSize(entry.size)}</span>{" "}
+        <span>Amount: {entry.size}</span>{" "}
         <span>Total: {formatTotal(entry.total)}</span>{" "}
       </div>
     ))}
