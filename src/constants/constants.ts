@@ -10,4 +10,7 @@ export const ProductsMap: Record<string, string> = {
 export const ProductIds = {
   XBTUSD: "PI_XBTUSD",
   ETHUSD: "PI_ETHUSD",
+  XRPUSD: "PI_XRPUSD",
+  LTCUSD: "PI_LTCUSD"
+ 
 };
