@@ -34,4 +34,5 @@ export interface AppContextType {
     orderHistory: Order[];
     createOrder: (order: Omit<Order, "orderId" | "completionDate" | "status">) => void;
     completeOrder: (orderId: number) => void;
+    cancelOrder: (orderId: number) => void;
   }
