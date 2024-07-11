@@ -48,14 +48,11 @@ const applyDeltas = (
     const deltaLevelSize = deltaLevel[1];
 
     if (deltaLevelSize === 0) {
-      // Remove the price level if the size is zero
       updatedLevels = removePriceLevel(deltaLevelPrice, updatedLevels);
     } else {
       if (levelExists(deltaLevelPrice, updatedLevels)) {
-        // Update the existing price level
         updatedLevels = updatePriceLevel(deltaLevel, updatedLevels);
       } else {
-        // Add new price level if it does not exist
         if (updatedLevels.length < ORDERBOOK_LEVELS) {
           updatedLevels = addPriceLevel(deltaLevel, updatedLevels);
         }
@@ -63,7 +60,6 @@ const applyDeltas = (
     }
   });
 
-  // Limit the number of levels to ORDERBOOK_LEVELS
   if (updatedLevels.length > ORDERBOOK_LEVELS) {
     updatedLevels = updatedLevels.slice(0, ORDERBOOK_LEVELS);
   }
