@@ -1,88 +1,109 @@
 import { useCallback, useEffect, useState } from "react";
-import { addTotalSums, applyDeltas } from "../helper/orderBook";
+import { addTotalSums, applyDeltas, formatNumber } from "../helper/orderBook";
 import { ProductsMap, WSS_FEED_URL } from "../constants/constants";
-import { Delta, OrderBookEntry } from "../types/types";
+import { Delta, OrderBookEntry, setTickerData } from "../types/types";
 import useWebSocket from "react-use-websocket";
-
-const calculateMidpointPrice = (
-  bids: OrderBookEntry[],
-  asks: OrderBookEntry[]
-): number => {
-  const bestBid = bids[0]?.price || 0;
-  const bestAsk = asks[0]?.price || 0;
-  return (bestBid + bestAsk) / 2;
-};
 
 export const useOrderBook = (initialProductId: string) => {
   const [currentBids, setCurrentBids] = useState<OrderBookEntry[]>([]);
   const [currentAsks, setCurrentAsks] = useState<OrderBookEntry[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [tickerData, setTickerData] = useState<setTickerData>({
+    markPrice: 0,
+    volume: 0,
+    high: 0,
+    low: 0,
+    change: 0,
+  });
 
   const { sendJsonMessage } = useWebSocket(WSS_FEED_URL, {
-    onOpen: () => console.log("WebSocket connection opened."),
-    onClose: () => console.log("WebSocket connection closed."),
     shouldReconnect: () => true,
+    onOpen: () => {
+      console.log("WebSocket connection opened.");
+      connect(initialProductId);
+    },
+    onClose: () => console.log("WebSocket connection closed."),
     onMessage: (event: WebSocketEventMap["message"]) => {
       const data = JSON.parse(event.data);
-      processOrderBookData(data);
+      if (data.feed === "book_ui_1") {
+        processOrderBookData(data);
+      } else if (data.feed === "ticker") {
+        processTickerData(data);
+      }
     },
   });
 
-  const processOrderBookData = useCallback(
-    (data: Delta) => {
-      let updatedBids = currentBids.map(({ price, size }) => [price, size]);
-      let updatedAsks = currentAsks.map(({ price, size }) => [price, size]);
-  
+  const connect = (product: string) => {
+    const orderBookUnsubscribeMessage = {
+      event: "unsubscribe",
+      feed: "book_ui_1",
+      product_ids: [ProductsMap[product]],
+    };
+    const orderBookSubscribeMessage = {
+      event: "subscribe",
+      feed: "book_ui_1",
+      product_ids: [product],
+    };
+    const tickerUnsubscribeMessage = {
+      event: "unsubscribe",
+      feed: "ticker",
+      product_ids: [ProductsMap[product]],
+    };
+    const tickerSubscribeMessage = {
+      event: "subscribe",
+      feed: "ticker",
+      product_ids: [product],
+    };
+
+    sendJsonMessage(orderBookUnsubscribeMessage);
+    sendJsonMessage(orderBookSubscribeMessage);
+    sendJsonMessage(tickerUnsubscribeMessage);
+    sendJsonMessage(tickerSubscribeMessage);
+  };
+
+  const processOrderBookData = useCallback((data: Delta) => {
+    setCurrentBids((prevBids) => {
+      let updatedBids = prevBids.map(({ price, size }) => [price, size]);
       if (data.bids && data.bids.length > 0) {
         updatedBids = applyDeltas(updatedBids, data.bids);
         const updatedBidEntries = addTotalSums(updatedBids).map(
           ([price, size, total]) => ({ price, size, total })
         );
-        setCurrentBids(updatedBidEntries);
+        return updatedBidEntries;
       }
-  
+      return prevBids;
+    });
+
+    setCurrentAsks((prevAsks) => {
+      let updatedAsks = prevAsks.map(({ price, size }) => [price, size]);
       if (data.asks && data.asks.length > 0) {
         updatedAsks = applyDeltas(updatedAsks, data.asks);
         const updatedAskEntries = addTotalSums(updatedAsks).map(
           ([price, size, total]) => ({ price, size, total })
         );
-        setCurrentAsks(updatedAskEntries);
+        return updatedAskEntries;
       }
-  
-      if (updatedBids.length > 0 && updatedAsks.length > 0) {
-        const index = calculateMidpointPrice(
-          updatedBids.map(([price, size]) => ({ price, size, total: 0 })),
-          updatedAsks.map(([price, size]) => ({ price, size, total: 0 }))
-        );
-        setCurrentIndex(index);
-      }
-  
-      setLoading(false);
-    },
-    [currentBids, currentAsks]
-  );
-  
+      return prevAsks;
+    });
+
+    setLoading(false);
+  }, []);
+
+  const processTickerData = useCallback((data: setTickerData) => {
+    const { markPrice, volume, high, low, change } = data;
+    const formattedMarkPrice = markPrice
+    setTickerData({
+      markPrice: formattedMarkPrice,
+      volume,
+      high,
+      low,
+      change,
+    });
+  }, []);
 
   useEffect(() => {
-    const connect = (product: string) => {
-      const unSubscribeMessage = {
-        event: "unsubscribe",
-        feed: "book_ui_1",
-        product_ids: [ProductsMap[product]],
-      };
-      sendJsonMessage(unSubscribeMessage);
-
-      const subscribeMessage = {
-        event: "subscribe",
-        feed: "book_ui_1",
-        product_ids: [product],
-      };
-      sendJsonMessage(subscribeMessage);
-    };
-
     connect(initialProductId);
   }, [initialProductId, sendJsonMessage]);
 
-  return { currentBids, currentAsks, currentIndex, loading };
+  return { currentBids, currentAsks, loading, tickerData };
 };

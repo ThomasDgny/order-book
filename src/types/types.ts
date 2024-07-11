@@ -39,9 +39,17 @@ export interface AppContextType {
   setPair: (pair: string) => void;
   currentBids: OrderBookEntry[];
   currentAsks: OrderBookEntry[];
-  currentIndex: number;
+  tickerData: setTickerData;
   loading: boolean;
   orderHistory: Order[];
   createOrder: (order: Order) => void;
   cancelOrder: (orderId: string) => void;
+}
+
+export interface setTickerData {
+  markPrice: number;
+  volume: number;
+  high: number;
+  low: number;
+  change: number;
 }

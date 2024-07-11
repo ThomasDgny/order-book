@@ -5,10 +5,10 @@ import { ProductIds } from "../constants/constants";
 import { useOrderBook } from "../hooks/useOrderBook";
 
 export default function Home() {
-  const { currentIndex } = useOrderBook(ProductIds.XBTUSD);
+  const { tickerData } = useOrderBook(ProductIds.XBTUSD);
   return (
     <div>
-      <div>{currentIndex}</div>
+      <div>{tickerData.markPrice}</div>
       <div className="container flex w-full gap-10">
         <div>
           <OrderBook />

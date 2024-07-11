@@ -5,7 +5,8 @@ import { Order } from "../../../../../types/types";
 import LimitOrderForm from "./LimitOrderForm";
 
 export default function LimitOrder() {
-  const { currentIndex, balance, selectedPair, createOrder } = useAppContext();
+  const { tickerData, balance, selectedPair, createOrder } = useAppContext();
+  const currentIndex = tickerData.markPrice;
 
   const [buyPrice, setBuyPrice] = useState<number>(currentIndex);
   const [buyQuantity, setBuyQuantity] = useState<number>(0);

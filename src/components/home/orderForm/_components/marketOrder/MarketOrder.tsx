@@ -5,11 +5,13 @@ import { Order } from "../../../../../types/types";
 import MarketOrderForm from "./MarketOrderForm";
 
 export default function MarketOrder() {
-  const { currentIndex, balance, selectedPair, createOrder } = useAppContext();
+  const { tickerData, balance, selectedPair, createOrder } = useAppContext();
   const [buyQuantity, setBuyQuantity] = useState<number>(0);
   const [sellQuantity, setSellQuantity] = useState<number>(0);
   const [buyTotal, setBuyTotal] = useState<number>(0);
   const [sellTotal, setSellTotal] = useState<number>(0);
+
+  const currentIndex = tickerData.markPrice;
 
   const handleOrderSubmit = (
     orderType: Order["orderType"],

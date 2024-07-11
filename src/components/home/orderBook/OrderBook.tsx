@@ -31,7 +31,7 @@ const OrderBook: React.FC = () => {
 interface OrderBookListProps {
   title: string;
   entries: OrderBookEntry[];
-  formatNumber: (numb: number,digits: number) => string;
+  formatNumber: (numb: number, digits: number) => string;
 }
 
 const OrderBookList: React.FC<OrderBookListProps> = ({

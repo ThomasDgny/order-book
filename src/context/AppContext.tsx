@@ -20,7 +20,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
   const [selectedPair, setSelectedPair] = useState<string>(INITIAL_PAIR);
   const [balance, setBalance] = useState<number>(INITIAL_BALANCE);
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
-  const { currentBids, currentAsks , currentIndex, loading } = useOrderBook(selectedPair);
+  const { currentBids, currentAsks , tickerData, loading } = useOrderBook(selectedPair);
 
   const setPair = (pair: string) => setSelectedPair(pair);
 
@@ -88,7 +88,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const contextValue: AppContextType = {
     loading,
-    currentIndex,
+    tickerData,
     selectedPair,
     balance,
     setBalance,
