@@ -14,7 +14,6 @@ const calculateMidpointPrice = (
 };
 
 export const useOrderBook = (initialProductId: string) => {
-  const [productId, setProductId] = useState(initialProductId);
   const [currentBids, setCurrentBids] = useState<OrderBookEntry[]>([]);
   const [currentAsks, setCurrentAsks] = useState<OrderBookEntry[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -38,7 +37,7 @@ export const useOrderBook = (initialProductId: string) => {
       if (data.bids && data.bids.length > 0) {
         updatedBids = applyDeltas(updatedBids, data.bids);
         const updatedBidEntries = addTotalSums(updatedBids).map(
-          ([price, size, total]) => ({price,size,total})
+          ([price, size, total]) => ({ price, size, total })
         );
         setCurrentBids(updatedBidEntries);
       }
@@ -46,7 +45,7 @@ export const useOrderBook = (initialProductId: string) => {
       if (data.asks && data.asks.length > 0) {
         updatedAsks = applyDeltas(updatedAsks, data.asks);
         const updatedAskEntries = addTotalSums(updatedAsks).map(
-          ([price, size, total]) => ({price, size, total})
+          ([price, size, total]) => ({ price, size, total })
         );
         setCurrentAsks(updatedAskEntries);
       }
@@ -61,7 +60,7 @@ export const useOrderBook = (initialProductId: string) => {
 
       setLoading(false);
     },
-    [currentIndex, currentBids, currentAsks]
+    [currentBids, currentAsks]
   );
 
   useEffect(() => {
@@ -81,8 +80,8 @@ export const useOrderBook = (initialProductId: string) => {
       sendJsonMessage(subscribeMessage);
     };
 
-    connect(productId);
-  }, [productId, sendJsonMessage]);
+    connect(initialProductId);
+  }, [initialProductId, sendJsonMessage]);
 
-  return { currentIndex, currentBids, currentAsks, loading, setProductId };
+  return { currentBids, currentAsks, currentIndex, loading };
 };

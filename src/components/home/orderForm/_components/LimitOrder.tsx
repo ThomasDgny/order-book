@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useOrderBook } from "../../../../hooks/useOrderBook";
-import { ProductIds } from "../../../../constants/constants";
+import { useAppContext } from "../../../../context/AppContext";
+
 
 interface Order {
   orderType: string;
@@ -13,15 +13,14 @@ interface Order {
 }
 
 const LimitOrderForm: React.FC = () => {
-  const { currentIndex } = useOrderBook(ProductIds.XBTUSD);
-  const [exchange, setExchange] = useState(0);
+  const { currentIndex, balance } = useAppContext();
+  
   const [buyPrice, setBuyPrice] = useState<number>(currentIndex);
   const [buyQuantity, setBuyQuantity] = useState<number>(0);
   const [buyTotal, setBuyTotal] = useState<number>(0);
   const [sellPrice, setSellPrice] = useState<number>(0);
   const [sellQuantity, setSellQuantity] = useState<number>(0);
   const [sellTotal, setSellTotal] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(1000);
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {

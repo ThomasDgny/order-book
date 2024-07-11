@@ -1,10 +1,9 @@
 import React from "react";
-import { ProductIds } from "../../../constants/constants";
-import { useOrderBook } from "../../../hooks/useOrderBook";
 import { OrderBookEntry } from "../../../types/types";
+import { useAppContext } from "../../../context/AppContext";
 
 const OrderBook: React.FC = () => {
-  const { currentBids, currentAsks, loading } = useOrderBook(ProductIds.XBTUSD);
+  const { currentBids, currentAsks, loading } = useAppContext();
 
   const formatPrice = (price: number): string => {
     return price?.toLocaleString("en", {
@@ -14,7 +13,10 @@ const OrderBook: React.FC = () => {
   };
 
   const formatSize = (size: number): string => {
-    return size.toFixed(0);
+    return size?.toLocaleString("en", {
+      useGrouping: true,
+      minimumFractionDigits: 2,
+    });
   };
 
   const formatTotal = (total: number): string => {
@@ -70,7 +72,7 @@ const OrderBookList: React.FC<OrderBookListProps> = ({
     {entries.map((entry, index) => (
       <div key={index}>
         <span>Price:{formatPrice(entry.price)}</span>{" "}
-        <span>Amount: {entry.size}</span>{" "}
+        <span>Amount: {formatSize(entry.size)}</span>{" "}
         <span>Total: {formatTotal(entry.total)}</span>{" "}
       </div>
     ))}
