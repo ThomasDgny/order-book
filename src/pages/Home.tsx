@@ -2,15 +2,14 @@ import { useAppContext } from "../context/AppContext";
 import OrderBook from "../components/home/orderBook/OrderBook";
 import OrderForm from "../components/home/orderForm/OrderForm";
 import OrderHistory from "../components/home/orderHistory/OrderHistory";
-import { ProductIds } from "../constants/constants";
-import { TimeFrames } from "../constants/constants";
+import { ProductIds, TimeFrames } from "../constants/constants";
 import { useState } from "react";
 
 type ProductIdKey = keyof typeof ProductIds;
 type TimeFrameKey = keyof typeof TimeFrames;
 
 export default function Home() {
-  const [switchTimeFrame, setSwitchTimeFrame] = useState("")
+  const [switchTimeFrame, setSwitchTimeFrame] = useState<TimeFrameKey>("1min");
   const {
     orderHistory,
     cancelOrder,
@@ -23,6 +22,7 @@ export default function Home() {
   } = useAppContext();
 
   const handlePairChange = (newPair: ProductIdKey) => {
+   
     setPair(ProductIds[newPair]);
   };
 
@@ -37,7 +37,9 @@ export default function Home() {
           <button
             key={key}
             className={`px-4 py-2 rounded-md ${
-              selectedPair === ProductIds[key as ProductIdKey] ? "bg-blue-500 text-white" : "bg-gray-200"
+              selectedPair === ProductIds[key as ProductIdKey]
+                ? "bg-blue-500 text-white"
+                : "bg-gray-200"
             }`}
             onClick={() => handlePairChange(key as ProductIdKey)}
           >
@@ -50,7 +52,7 @@ export default function Home() {
           <button
             key={key}
             className={`px-4 py-2 rounded-md ${
-              switchTimeFrame === TimeFrames[key as TimeFrameKey] ? "bg-blue-500 text-white" : "bg-gray-200"
+              switchTimeFrame === key ? "bg-blue-500 text-white" : "bg-gray-200"
             }`}
             onClick={() => handleTimeFrameChange(key as TimeFrameKey)}
           >
@@ -60,7 +62,9 @@ export default function Home() {
       </div>
       {selectedPair ? (
         <>
-          <h1 className="text-2xl font-bold mb-4">Details for {selectedPair}</h1>
+          <h1 className="text-2xl font-bold mb-4">
+            Details for {selectedPair}
+          </h1>
           <p>{tickerData.markPrice}</p>
           <div className="flex gap-10">
             <div className="flex-1">
@@ -76,12 +80,15 @@ export default function Home() {
                   <h2 className="text-xl font-bold mb-4">Order Form</h2>
                   <OrderForm />
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow-md">
-                  <h2 className="text-xl font-bold mb-4">Order History</h2>
-                  <OrderHistory orderHistory={orderHistory} cancelOrder={cancelOrder} />
-                </div>
               </div>
             </div>
+          </div>
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold mb-4">Order History</h2>
+            <OrderHistory
+              orderHistory={orderHistory}
+              cancelOrder={cancelOrder}
+            />
           </div>
         </>
       ) : (

@@ -11,10 +11,12 @@ export const ProductIds = {
   LTCUSD: "ltcusdt",
 };
 
+// constants/constants.ts
+
 export const TimeFrames = {
-  "1min": "1min",
-  "5min": "5min",
-  "15min": "15min",
-  "1h": "1h",
-  "12h": "12h",
-};
+  "1min": 60 * 1000,
+  "5min": 5 * 60 * 1000, 
+  "15min": 15 * 60 * 1000, 
+  "1h": 60 * 60 * 1000, 
+  "12h": 12 * 60 * 60 * 1000, 
+} ;
