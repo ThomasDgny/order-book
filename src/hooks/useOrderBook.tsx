@@ -1,109 +1,105 @@
 import { useCallback, useEffect, useState } from "react";
-import { addTotalSums, applyDeltas, formatNumber } from "../helper/orderBook";
-import { ProductsMap, WSS_FEED_URL } from "../constants/constants";
-import { Delta, OrderBookEntry, setTickerData } from "../types/types";
-import useWebSocket from "react-use-websocket";
+import { BINANCE_WS_URL } from "../constants/constants";
+import { OrderBookEntry } from "../types/types";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
-export const useOrderBook = (initialProductId: string) => {
+export const useOrderBook = (coinID: string) => {
+  const [subscriptionId, setSubscriptionId] = useState<number | null>(null);
   const [currentBids, setCurrentBids] = useState<OrderBookEntry[]>([]);
   const [currentAsks, setCurrentAsks] = useState<OrderBookEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [tickerData, setTickerData] = useState<setTickerData>({
-    markPrice: 0,
-    volume: 0,
-    high: 0,
-    low: 0,
-    change: 0,
-  });
 
-  const { sendJsonMessage } = useWebSocket(WSS_FEED_URL, {
+  const { sendJsonMessage, readyState } = useWebSocket(BINANCE_WS_URL, {
     shouldReconnect: () => true,
     onOpen: () => {
       console.log("WebSocket connection opened.");
-      connect(initialProductId);
+      subscribe(coinID);
     },
-    onClose: () => console.log("WebSocket connection closed."),
+    onClose: () => {
+      console.log("WebSocket connection closed.");
+      setSubscriptionId(null);
+    },
+    onError: (event) => {
+      console.error("WebSocket error:", event);
+    },
     onMessage: (event: WebSocketEventMap["message"]) => {
       const data = JSON.parse(event.data);
-      if (data.feed === "book_ui_1") {
-        processOrderBookData(data);
-      } else if (data.feed === "ticker") {
-        processTickerData(data);
+      if (data.e === "depthUpdate") {
+        console.log("Received data:", data);
+        processOrderBookData(data)
       }
     },
   });
 
-  const connect = (product: string) => {
-    const orderBookUnsubscribeMessage = {
-      event: "unsubscribe",
-      feed: "book_ui_1",
-      product_ids: [ProductsMap[product]],
-    };
-    const orderBookSubscribeMessage = {
-      event: "subscribe",
-      feed: "book_ui_1",
-      product_ids: [product],
-    };
-    const tickerUnsubscribeMessage = {
-      event: "unsubscribe",
-      feed: "ticker",
-      product_ids: [ProductsMap[product]],
-    };
-    const tickerSubscribeMessage = {
-      event: "subscribe",
-      feed: "ticker",
-      product_ids: [product],
-    };
+  const unsubscribe = useCallback(
+    (id: number, product: string) => {
+      const unsubscribeMessage = {
+        method: "UNSUBSCRIBE",
+        params: [`${product}@depth`],
+        id: id,
+      };
 
-    sendJsonMessage(orderBookUnsubscribeMessage);
-    sendJsonMessage(orderBookSubscribeMessage);
-    sendJsonMessage(tickerUnsubscribeMessage);
-    sendJsonMessage(tickerSubscribeMessage);
-  };
+      sendJsonMessage(unsubscribeMessage);
+      console.log(`Unsubscribed from ${product} with id ${id}`);
+    },
+    [sendJsonMessage]
+  );
 
-  const processOrderBookData = useCallback((data: Delta) => {
-    setCurrentBids((prevBids) => {
-      let updatedBids = prevBids.map(({ price, size }) => [price, size]);
-      if (data.bids && data.bids.length > 0) {
-        updatedBids = applyDeltas(updatedBids, data.bids);
-        const updatedBidEntries = addTotalSums(updatedBids).map(
-          ([price, size, total]) => ({ price, size, total })
-        );
-        return updatedBidEntries;
+  const subscribe = useCallback(
+    (coin: string) => {
+      if (subscriptionId !== null) {
+        unsubscribe(subscriptionId, coin);
       }
-      return prevBids;
-    });
 
-    setCurrentAsks((prevAsks) => {
-      let updatedAsks = prevAsks.map(({ price, size }) => [price, size]);
-      if (data.asks && data.asks.length > 0) {
-        updatedAsks = applyDeltas(updatedAsks, data.asks);
-        const updatedAskEntries = addTotalSums(updatedAsks).map(
-          ([price, size, total]) => ({ price, size, total })
-        );
-        return updatedAskEntries;
-      }
-      return prevAsks;
-    });
+      const id = 1;
+      setSubscriptionId(id);
 
-    setLoading(false);
-  }, []);
+      const subscribeMessage = {
+        method: "SUBSCRIBE",
+        params: [`${coin}@depth`],
+        id: id,
+      };
 
-  const processTickerData = useCallback((data: setTickerData) => {
-    const { markPrice, volume, high, low, change } = data;
-    const formattedMarkPrice = markPrice
-    setTickerData({
-      markPrice: formattedMarkPrice,
-      volume,
-      high,
-      low,
-      change,
-    });
+      sendJsonMessage(subscribeMessage);
+      console.log(`Subscribed to ${coin} with id ${id}`);
+    },
+    [sendJsonMessage, subscriptionId, unsubscribe]
+  );
+
+  const processOrderBookData = useCallback((data: any) => {
+    if (data.e === "depthUpdate") {
+      console.log("Processing depth update data:", data);
+
+      const updatedBids = data.b.map(([price, size]: [string, string]) => ({
+        price: parseFloat(price),
+        size: parseFloat(size),
+      }));
+
+      const updatedAsks = data.a.map(([price, size]: [string, string]) => ({
+        price: parseFloat(price),
+        size: parseFloat(size),
+      }));
+
+      setCurrentBids(updatedBids);
+      setCurrentAsks(updatedAsks);
+
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    connect(initialProductId);
-  }, [initialProductId, sendJsonMessage]);
+    if (readyState === ReadyState.OPEN) {
+      subscribe(coinID);
+      console.log(`Subscribed to ${coinID}`);
+    }
 
-  return { currentBids, currentAsks, loading, tickerData };
+    return () => {
+      if (subscriptionId !== null) {
+        unsubscribe(subscriptionId, coinID);
+        console.log(`Unsubscribed from ${coinID}`);
+      }
+    };
+  }, [coinID, readyState, subscribe, unsubscribe, subscriptionId]);
+
+  return { currentBids, currentAsks, loading };
 };

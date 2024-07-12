@@ -1,11 +1,20 @@
 import React from "react";
 import { OrderBookEntry } from "../../../types/types";
-import { useAppContext } from "../../../context/AppContext";
-import { formatNumber } from "../../../helper/orderBook";
 
-const OrderBook: React.FC = () => {
-  const { currentBids, currentAsks, loading } = useAppContext();
+interface OrderBookProps {
+  currentBids: OrderBookEntry[];
+  currentAsks: OrderBookEntry[];
+  loading: boolean;
+}
 
+const formatNumber = (num: number, digits: number): string => {
+  return num?.toLocaleString("en", {
+    useGrouping: true,
+    minimumFractionDigits: digits,
+  });
+};
+
+const OrderBook = ({ currentBids, currentAsks, loading }: OrderBookProps) => {
   return (
     <div>
       {loading ? (
@@ -42,10 +51,9 @@ const OrderBookList: React.FC<OrderBookListProps> = ({
   <div>
     <h3>{title}</h3>
     {entries.map((entry, index) => (
-      <div key={index}>
-        <span>Price:{formatNumber(entry.price, 4)}</span>{" "}
+      <div key={index} className="text-sm font-semibold">
+        <span>Price:{formatNumber(entry.price, 2)}</span>{" "}
         <span>Amount: {formatNumber(entry.size, 0)}</span>{" "}
-        <span>Total: {formatNumber(entry.total, 2)}</span>{" "}
       </div>
     ))}
   </div>

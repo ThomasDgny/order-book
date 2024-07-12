@@ -2,6 +2,7 @@ import React, { createContext, ReactNode, useContext, useEffect, useState } from
 import { AppContextType, Order } from "../types/types";
 import { useOrderBook } from "../hooks/useOrderBook";
 import { ProductIds } from "../constants/constants";
+import { useTicker } from "../hooks/useTicker";
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -14,43 +15,43 @@ export const useAppContext = () => {
 };
 
 const INITIAL_BALANCE = 1000000;
-const INITIAL_PAIR = ProductIds.XBTUSD;
 
 export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [selectedPair, setSelectedPair] = useState<string>(INITIAL_PAIR);
+  const [selectedPair, setSelectedPair] = useState<string>(ProductIds.BTCUSD);
   const [balance, setBalance] = useState<number>(INITIAL_BALANCE);
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
-  const { currentBids, currentAsks , tickerData, loading } = useOrderBook(selectedPair);
+  const { currentBids, currentAsks, loading } = useOrderBook(selectedPair);
+  const { tickerData } = useTicker(selectedPair);
 
   const setPair = (pair: string) => setSelectedPair(pair);
 
   const createOrder = (order: Order) => {
     const cost = order.price * order.quantity;
     if (order.orderType === "BUY_LIMIT" && balance >= cost) {
-      setBalance(prevBalance => prevBalance - cost);
-      setOrderHistory(prevOrders => [...prevOrders, order]);
+      setBalance((prevBalance) => prevBalance - cost);
+      setOrderHistory((prevOrders) => [...prevOrders, order]);
     } else if (order.orderType === "SELL_LIMIT") {
-      setOrderHistory(prevOrders => [...prevOrders, order]);
+      setOrderHistory((prevOrders) => [...prevOrders, order]);
     } else {
       console.error("Insufficient balance for the order.");
     }
   };
 
   const completeOrder = (orderId: string) => {
-    setOrderHistory(prevOrders =>
-      prevOrders.map(order =>
+    setOrderHistory((prevOrders) =>
+      prevOrders.map((order) =>
         order.orderId === orderId ? { ...order, status: "Filled", completionDate: new Date() } : order
       )
     );
   };
 
   const cancelOrder = (orderId: string) => {
-    setOrderHistory(prevOrders =>
-      prevOrders.map(order => {
+    setOrderHistory((prevOrders) =>
+      prevOrders.map((order) => {
         if (order.orderId === orderId && order.status !== "Filled") {
           if (order.status === "Pending" && order.orderType === "BUY_LIMIT") {
             const refund = order.price * order.quantity;
-            setBalance(prevBalance => prevBalance + refund);
+            setBalance((prevBalance) => prevBalance + refund);
           }
           return { ...order, status: "Canceled", completionDate: new Date() };
         }
@@ -60,18 +61,18 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   const checkOrderMatches = () => {
-    setOrderHistory(prevOrders =>
-      prevOrders.map(order => {
+    setOrderHistory((prevOrders) =>
+      prevOrders.map((order) => {
         if (order.status === "Pending") {
           if (order.orderType === "BUY_LIMIT") {
-            const matchingAsk = currentAsks.find(ask => ask.price <= order.price);
+            const matchingAsk = currentAsks.find((ask) => ask.price <= order.price);
             if (matchingAsk) completeOrder(order.orderId);
           } else if (order.orderType === "SELL_LIMIT") {
-            const matchingBid = currentBids.find(bid => bid.price >= order.price);
+            const matchingBid = currentBids.find((bid) => bid.price >= order.price);
             if (matchingBid) {
               completeOrder(order.orderId);
               const profit = order.price * order.quantity;
-              setBalance(prevBalance => prevBalance + profit);
+              setBalance((prevBalance) => prevBalance + profit);
             }
           }
         }
@@ -80,9 +81,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     );
   };
 
-
   useEffect(() => {
-
     checkOrderMatches();
   }, [currentBids, currentAsks]);
 

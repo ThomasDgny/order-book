@@ -1,12 +1,13 @@
-import React from 'react';
-import { useAppContext } from '../../../context/AppContext';
-import { Order } from '../../../types/types';
+import { Order } from "../../../types/types";
 
-const OrderHistory: React.FC = () => {
-  const { orderHistory, cancelOrder } = useAppContext();
+interface OrderHistoryProps {
+  orderHistory: any[];
+  cancelOrder: (orderId: string) => void;
+}
 
+const OrderHistory = ({ orderHistory, cancelOrder }: OrderHistoryProps) => {
   const formatDateTime = (dateTime: Date) => {
-    return dateTime.toLocaleString(); 
+    return dateTime.toLocaleString();
   };
 
   return (
@@ -38,8 +39,12 @@ const OrderHistory: React.FC = () => {
               <td>{formatDateTime(order.creationDate)}</td>
               <td>{order.status}</td>
               <td>
-                {order.status === 'Pending' && (<button onClick={() => cancelOrder(order.orderId)}>Cancel</button>)}
-                {order.status === 'Filled' && (<span>Order Completed</span>)}
+                {order.status === "Pending" && (
+                  <button onClick={() => cancelOrder(order.orderId)}>
+                    Cancel
+                  </button>
+                )}
+                {order.status === "Filled" && <span>Order Completed</span>}
               </td>
             </tr>
           ))}
