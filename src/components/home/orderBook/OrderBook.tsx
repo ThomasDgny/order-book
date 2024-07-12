@@ -14,7 +14,7 @@ const formatNumber = (num: number, digits: number): string => {
   });
 };
 
-const OrderBook = ({ currentBids, currentAsks, loading }: OrderBookProps) => {
+export default function OrderBook ({ currentBids, currentAsks, loading }: OrderBookProps)  {
   return (
     <div>
       {loading ? (
@@ -30,6 +30,7 @@ const OrderBook = ({ currentBids, currentAsks, loading }: OrderBookProps) => {
             title="Bids"
             entries={currentBids}
             formatNumber={formatNumber}
+            hideHeader={true}
           />
         </>
       )}
@@ -41,23 +42,39 @@ interface OrderBookListProps {
   title: string;
   entries: OrderBookEntry[];
   formatNumber: (numb: number, digits: number) => string;
+  hideHeader?: boolean;
 }
 
-const OrderBookList: React.FC<OrderBookListProps> = ({
+const OrderBookList = ({
   title,
   entries,
   formatNumber,
-}) => (
-  <div>
-    <h3>{title}</h3>
-    {entries.map((entry, index) => (
-      <div key={index} className="text-sm font-semibold">
-        <span>Price:{formatNumber(entry.price, 4)}</span>{" "}
-        <span>Amount: {formatNumber(entry.size, 4)}</span>{" "}
-        <span>total: {formatNumber(entry.total, 4)}</span>{" "}
-      </div>
-    ))}
+  hideHeader = false,
+}:OrderBookListProps) => (
+  <div className="max-w-72">
+    <h3 className="text-lg font-semibold">{title}</h3>
+    <table className="w-full mt-2">
+      {!hideHeader && (
+        <thead>
+          <tr>
+            <th className="py-1 text-left">Price</th>
+            <th className="py-1 text-left">Amount</th>
+            <th className="py-1 text-left">Total</th>
+          </tr>
+        </thead>
+      )}
+      <tbody>
+        {entries.map((entry, index) => (
+          <tr key={index}>
+            <td className={`py-1 text-xs font-bold text-left ${title === "Asks" ?  "text-red-600" : "text-green-600"}`}>
+              {formatNumber(entry.price, 4)}
+            </td>
+            <td className="py-1 text-xs font-bold text-left">{formatNumber(entry.size, 4)}</td>
+            <td className="py-1 text-xs font-bold text-left">{formatNumber(entry.total, 4)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   </div>
 );
 
-export default OrderBook;
