@@ -1,4 +1,3 @@
-import React from "react";
 import TickerRowItem from "./TickerRowItem";
 
 interface Pair {
@@ -10,7 +9,7 @@ interface TickerRowProps {
   pairs: Pair[];
 }
 
-const TickerRow: React.FC<TickerRowProps> = ({ pairs }) => {
+export default function TickerRow({ pairs }: TickerRowProps) {
   return (
     <>
       {pairs.map(({ pair, productId }) => (
@@ -18,6 +17,4 @@ const TickerRow: React.FC<TickerRowProps> = ({ pairs }) => {
       ))}
     </>
   );
-};
-
-export default TickerRow;
+}

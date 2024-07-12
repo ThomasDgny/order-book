@@ -1,4 +1,3 @@
-import React from "react";
 import TickerRow from "./TickerRow";
 import { ProductIds } from "../../../constants/constants";
 

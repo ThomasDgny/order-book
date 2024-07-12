@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import MarketOrder from "./_components/marketOrder/MarketOrder";
 import LimitOrder from "./_components/limitOrder/LimitOrder";
 
-const OrderComponent: React.FC = () => {
+export default function OrderForm() {
   const [activeTab, setActiveTab] = useState<"limit" | "market">("limit");
 
   return (
@@ -17,6 +17,4 @@ const OrderComponent: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default OrderComponent;
+}

@@ -1,30 +1,13 @@
-import OrderBook from "../components/home/orderBook/OrderBook";
-import OrderForm from "../components/home/orderForm/OrderComponent";
-import OrderHistory from "../components/home/orderHistory/OrderHistory";
 import TickerTable from "../components/home/tickerTable/TickerTable";
-import { ProductIds } from "../constants/constants";
-import { useOrderBook } from "../hooks/useOrderBook";
 
 export default function Home() {
-  const { tickerData } = useOrderBook(ProductIds.XBTUSD);
   return (
     <div>
-      <div>{tickerData.markPrice}</div>
       <div className="container flex w-full gap-10">
         <div>
-          <OrderBook />
+          <h1 className="text-2xl font-bold mb-4">Cryptocurrency Ticker</h1>
+          <TickerTable />
         </div>
-        <div>
-          {/* Charts from TRADING VIEW */}
-          <OrderForm />
-        </div>
-        <div>
-          <OrderHistory />
-        </div>
-      </div>
-
-      <div>
-        <TickerTable />
       </div>
     </div>
   );
