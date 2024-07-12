@@ -20,7 +20,7 @@ export default function OrderBook ({ currentBids, currentAsks, loading }: OrderB
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <>
+        <div className="space-y-5">
           <OrderBookList
             title="Asks"
             entries={currentAsks}
@@ -32,7 +32,7 @@ export default function OrderBook ({ currentBids, currentAsks, loading }: OrderB
             formatNumber={formatNumber}
             hideHeader={true}
           />
-        </>
+        </div>
       )}
     </div>
   );
@@ -52,15 +52,15 @@ const OrderBookList = ({
   hideHeader = false,
 }:OrderBookListProps) => (
   <div className="max-w-72">
-    <h3 className="text-lg font-semibold">{title}</h3>
     <table className="w-full mt-2">
       {!hideHeader && (
         <thead>
           <tr>
-            <th className="py-1 text-left">Price</th>
-            <th className="py-1 text-left">Amount</th>
-            <th className="py-1 text-left">Total</th>
+            <th className="text-xs py-1 text-left">Price</th>
+            <th className="text-xs py-1 text-left">Amount</th>
+            <th className="text-xs py-1 text-left">Total</th>
           </tr>
+          <p className="text-xs font-bold mt-3">{title}</p>
         </thead>
       )}
       <tbody>
