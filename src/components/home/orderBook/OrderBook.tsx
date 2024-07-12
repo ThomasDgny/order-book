@@ -52,9 +52,9 @@ const OrderBookList: React.FC<OrderBookListProps> = ({
     <h3>{title}</h3>
     {entries.map((entry, index) => (
       <div key={index} className="text-sm font-semibold">
-        <span>Price:{formatNumber(entry.price, 2)}</span>{" "}
-        <span>Amount: {formatNumber(entry.size, 0)}</span>{" "}
-        <span>total: {formatNumber(entry.total, 2)}</span>{" "}
+        <span>Price:{formatNumber(entry.price, 4)}</span>{" "}
+        <span>Amount: {formatNumber(entry.size, 4)}</span>{" "}
+        <span>total: {formatNumber(entry.total, 4)}</span>{" "}
       </div>
     ))}
   </div>
