@@ -54,6 +54,7 @@ const OrderBookList: React.FC<OrderBookListProps> = ({
       <div key={index} className="text-sm font-semibold">
         <span>Price:{formatNumber(entry.price, 2)}</span>{" "}
         <span>Amount: {formatNumber(entry.size, 0)}</span>{" "}
+        <span>total: {formatNumber(entry.total, 2)}</span>{" "}
       </div>
     ))}
   </div>

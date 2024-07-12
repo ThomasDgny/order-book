@@ -10,3 +10,11 @@ export const ProductIds = {
   XRPUSD: "xrpusdt",
   LTCUSD: "ltcusdt",
 };
+
+export const TimeFrames = {
+  "1min": "1min",
+  "5min": "5min",
+  "15min": "15min",
+  "1h": "1h",
+  "12h": "12h",
+};

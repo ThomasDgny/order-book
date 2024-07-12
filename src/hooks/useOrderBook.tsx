@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { BINANCE_WS_URL } from "../constants/constants";
 import { OrderBookEntry } from "../types/types";
 import useWebSocket, { ReadyState } from "react-use-websocket";
+import { calculateRunningTotal, manageArraySize } from "../helper/orderHelper";
 
 export const useOrderBook = (coinID: string) => {
   const [subscriptionId, setSubscriptionId] = useState<number | null>(null);
@@ -26,7 +27,7 @@ export const useOrderBook = (coinID: string) => {
       const data = JSON.parse(event.data);
       if (data.e === "depthUpdate") {
         console.log("Received data:", data);
-        processOrderBookData(data)
+        processOrderBookData(data);
       }
     },
   });
@@ -73,15 +74,20 @@ export const useOrderBook = (coinID: string) => {
       const updatedBids = data.b.map(([price, size]: [string, string]) => ({
         price: parseFloat(price),
         size: parseFloat(size),
+        total: 0,
       }));
 
       const updatedAsks = data.a.map(([price, size]: [string, string]) => ({
         price: parseFloat(price),
         size: parseFloat(size),
+        total: 0,
       }));
 
-      setCurrentBids(updatedBids);
-      setCurrentAsks(updatedAsks);
+      const bidsWithTotal = calculateRunningTotal(updatedBids);
+      const asksWithTotal = calculateRunningTotal(updatedAsks);
+
+      setCurrentBids((prevBids) => manageArraySize(prevBids, bidsWithTotal));
+      setCurrentAsks((prevAsks) => manageArraySize(prevAsks, asksWithTotal));
 
       setLoading(false);
     }
