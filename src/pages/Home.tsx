@@ -30,7 +30,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col gap-3 p-2">
+    <div className="flex flex-col gap-3 p-2 bg-slate-50">
       <div className="flex gap-4 mt-4">
         {Object.keys(ProductIds).map((key) => (
           <button

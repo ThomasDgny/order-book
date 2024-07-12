@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useAppContext } from "../../../../../context/AppContext";
 import { v4 as uuidv4 } from "uuid";
-import { Order } from "../../../../../types/types";
+import { Order, OrderFormProps } from "../../../../../types/types";
 import MarketOrderForm from "./MarketOrderForm";
 
-export default function MarketOrder() {
-  const { tickerData, balance, selectedPair, createOrder } = useAppContext();
+
+export default function MarketOrder({ tickerData, balance, selectedPair, createOrder }: OrderFormProps) {
   const [buyQuantity, setBuyQuantity] = useState<number>(0);
   const [sellQuantity, setSellQuantity] = useState<number>(0);
   const [buyTotal, setBuyTotal] = useState<number>(0);
@@ -18,7 +17,10 @@ export default function MarketOrder() {
     quantity: number
   ) => {
     const totalCost = currentIndex * quantity;
-    if (quantity <= 0 || isNaN(quantity) || totalCost > balance) return;
+
+    if (quantity <= 0 || isNaN(quantity) || (orderType === "MARKET_BUY" && totalCost > balance)) {
+      return;
+    }
 
     const newOrder: Order = {
       pair: selectedPair,
@@ -26,13 +28,22 @@ export default function MarketOrder() {
       orderType,
       price: currentIndex,
       quantity,
-      total: currentIndex * quantity,
+      total: totalCost,
       creationDate: new Date(),
       completionDate: new Date(),
       status: "Filled",
     };
 
     createOrder(newOrder);
+
+    // Reset the form fields after order submission
+    if (orderType === "MARKET_BUY") {
+      setBuyQuantity(0);
+      setBuyTotal(0);
+    } else {
+      setSellQuantity(0);
+      setSellTotal(0);
+    }
   };
 
   const updateTotals = () => {

@@ -53,3 +53,10 @@ export interface setTickerData {
   low: number;
   change: number;
 }
+
+export interface OrderFormProps {
+  selectedPair: string;
+  balance: number;
+  tickerData: setTickerData;
+  createOrder: (order: Order) => void;
+}

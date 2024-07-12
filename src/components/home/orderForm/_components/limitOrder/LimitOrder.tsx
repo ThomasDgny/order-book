@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useAppContext } from "../../../../../context/AppContext";
 import { v4 as uuidv4 } from "uuid";
-import { Order } from "../../../../../types/types";
+import { Order, OrderFormProps } from "../../../../../types/types";
 import LimitOrderForm from "./LimitOrderForm";
 
-export default function LimitOrder() {
-  const { tickerData, balance, selectedPair, createOrder } = useAppContext();
+export default function LimitOrder({ tickerData, balance, selectedPair, createOrder }:OrderFormProps) {
   const currentIndex = tickerData.markPrice;
 
   const [buyPrice, setBuyPrice] = useState<number>(currentIndex);
+  const [sellPrice, setSellPrice] = useState<number>(currentIndex);
   const [buyQuantity, setBuyQuantity] = useState<number>(0);
   const [buyTotal, setBuyTotal] = useState<number>(0);
-  const [sellPrice, setSellPrice] = useState<number>(currentIndex);
   const [sellQuantity, setSellQuantity] = useState<number>(0);
   const [sellTotal, setSellTotal] = useState<number>(0);
 

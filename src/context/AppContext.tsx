@@ -1,4 +1,10 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { AppContextType, Order } from "../types/types";
 import { useOrderBook } from "../hooks/useOrderBook";
 import { ProductIds } from "../constants/constants";
@@ -16,10 +22,13 @@ export const useAppContext = () => {
 
 const INITIAL_BALANCE = 1000000;
 
-export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AppContextProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [selectedPair, setSelectedPair] = useState<string>(ProductIds.BTCUSD);
   const [balance, setBalance] = useState<number>(INITIAL_BALANCE);
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
+
   const { currentBids, currentAsks, loading } = useOrderBook(selectedPair);
   const { tickerData } = useTicker(selectedPair);
 
@@ -27,20 +36,25 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
 
   const createOrder = (order: Order) => {
     const cost = order.price * order.quantity;
-    if (order.orderType === "BUY_LIMIT" && balance >= cost) {
+
+    if (order.orderType === "BUY_LIMIT" || order.orderType === "MARKET_BUY" && balance >= cost) {
       setBalance((prevBalance) => prevBalance - cost);
       setOrderHistory((prevOrders) => [...prevOrders, order]);
-    } else if (order.orderType === "SELL_LIMIT") {
+    } else if (order.orderType === "SELL_LIMIT" || order.orderType === "MARKET_SELL") {
       setOrderHistory((prevOrders) => [...prevOrders, order]);
     } else {
-      console.error("Insufficient balance for the order.");
+      console.error(
+        "Insufficient balance for the order or unknown order type."
+      );
     }
   };
 
   const completeOrder = (orderId: string) => {
     setOrderHistory((prevOrders) =>
       prevOrders.map((order) =>
-        order.orderId === orderId ? { ...order, status: "Filled", completionDate: new Date() } : order
+        order.orderId === orderId
+          ? { ...order, status: "Filled", completionDate: new Date() }
+          : order
       )
     );
   };
@@ -99,5 +113,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     cancelOrder,
   };
 
-  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
+  );
 };
