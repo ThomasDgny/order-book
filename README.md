@@ -162,7 +162,3 @@ For any inquiries or discussions regarding this project or potential opportuniti
 - LinkedIn: [Connect on LinkedIn](https://www.linkedin.com/in/thomas-doganay/)
 
 Your interest and time are greatly appreciated!
-
-Best regards,  
-Thomas Doganay
-
