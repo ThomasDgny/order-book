@@ -1,5 +1,6 @@
 interface OrderFormProps {
   title: string;
+  selectedPair: string;
   price: number;
   setPrice: (price: number) => void;
   quantity: number;
@@ -12,6 +13,7 @@ interface OrderFormProps {
 
 export default function LimitOrderForm({
   title,
+  selectedPair,
   price,
   setPrice,
   quantity,
@@ -21,6 +23,8 @@ export default function LimitOrderForm({
   buttonColor,
   buttonText,
 }: OrderFormProps) {
+  const pair = selectedPair.toLocaleUpperCase();
+  
   return (
     <div className="p-4 w-full">
       <h3 className="text-2xl font-bold mb-4">{title}</h3>
@@ -55,7 +59,7 @@ export default function LimitOrderForm({
         onClick={handleSubmit}
         className={`block w-full ${buttonColor} text-white px-4 py-2 rounded-md`}
       >
-        {buttonText}
+        {`${buttonText} ${pair}`}
       </button>
     </div>
   );

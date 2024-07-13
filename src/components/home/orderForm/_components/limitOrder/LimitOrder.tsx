@@ -63,6 +63,7 @@ export default function LimitOrder({ tickerData, balance, selectedPair, createOr
       <div className="flex w-full justify-around">
         <LimitOrderForm
           title="Buy"
+          selectedPair={selectedPair}
           price={buyPrice}
           setPrice={setBuyPrice}
           quantity={buyQuantity}
@@ -77,6 +78,7 @@ export default function LimitOrder({ tickerData, balance, selectedPair, createOr
         <LimitOrderForm
           title="Sell"
           price={sellPrice}
+          selectedPair={selectedPair}
           setPrice={setSellPrice}
           quantity={sellQuantity}
           setQuantity={setSellQuantity}

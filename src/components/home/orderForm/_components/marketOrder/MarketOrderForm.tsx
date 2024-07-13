@@ -1,5 +1,6 @@
 interface OrderFormProps {
   title: string;
+  selectedPair: string;
   quantity: number;
   setQuantity: (quantity: number) => void;
   total: number;
@@ -8,15 +9,18 @@ interface OrderFormProps {
   buttonText: string;
 }
 
-export default function MarketOrderForm ({
+export default function MarketOrderForm({
   title,
+  selectedPair,
   quantity,
   setQuantity,
   total,
   handleSubmit,
   buttonColor,
   buttonText,
-}: OrderFormProps)  {
+}: OrderFormProps) {
+  const pair = selectedPair.toLocaleUpperCase();
+
   return (
     <div className="p-4 w-full">
       <h3 className="text-2xl font-bold mb-4">{title}</h3>
@@ -51,10 +55,8 @@ export default function MarketOrderForm ({
         onClick={handleSubmit}
         className={`block w-full ${buttonColor} text-white px-4 py-2 rounded-md`}
       >
-        {buttonText}
+        {`${buttonText} ${pair}`}
       </button>
     </div>
   );
-};
-
-
+}

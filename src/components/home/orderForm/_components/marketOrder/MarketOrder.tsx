@@ -57,6 +57,7 @@ export default function MarketOrder({ tickerData, balance, selectedPair, createO
       <div className="flex justify-around">
         <MarketOrderForm
           title="Buy"
+          selectedPair={selectedPair}
           quantity={buyQuantity}
           setQuantity={setBuyQuantity}
           total={buyTotal}
@@ -66,6 +67,7 @@ export default function MarketOrder({ tickerData, balance, selectedPair, createO
         />
         <MarketOrderForm
           title="Sell"
+          selectedPair={selectedPair}
           quantity={sellQuantity}
           setQuantity={setSellQuantity}
           total={sellTotal}
