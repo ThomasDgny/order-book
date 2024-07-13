@@ -1,6 +1,6 @@
-import { ProductIds, TimeFrames } from "../constants/constants";
+import { Coins, TimeFrames } from "../constants/constants";
 
-export type ProductIdKey = keyof typeof ProductIds;
+export type ProductIdKey = keyof typeof Coins;
 export type TimeFrameKey = keyof typeof TimeFrames;
 
 export interface OrderBookEntry {

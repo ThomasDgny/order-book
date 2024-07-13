@@ -13,7 +13,7 @@ export default function OrderForm() {
         <button onClick={() => setActiveTab("limit")}>Limit</button>
         <button onClick={() => setActiveTab("market")}>Market</button>
       </div>
-      <div className="flex justify-around mb-4">
+      <div className="flex justify-between gap-10">
         {activeTab === "limit" && (
           <LimitOrder
             balance={balance}

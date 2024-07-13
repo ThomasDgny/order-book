@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import {
   ChartOptions,
   ColorType,
@@ -10,9 +10,13 @@ import {
 import { BINANCE_WS_URL } from "../../../constants/constants";
 import { KlinePayload } from "../../../types/types";
 
-export default function ChartComponent({ coin, time }: { coin: string; time: string }) {
-  const [coinData, setCoinData] = useState<CandlestickData<Time>[]>([]);
-
+export default function ChartComponent({
+  coin,
+  time,
+}: {
+  coin: string;
+  time: string;
+}) {
   useEffect(() => {
     const chartOptions: DeepPartial<ChartOptions> = {
       layout: {
@@ -26,51 +30,77 @@ export default function ChartComponent({ coin, time }: { coin: string; time: str
       },
     };
 
-    const chart = createChart(
-      document.getElementById("chart-container") as string | HTMLElement,
-      chartOptions
-    );
+    let chart: ReturnType<typeof createChart>;
+    let candlestickSeries: any;
 
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderVisible: false,
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
-    });
+    const createOrUpdateChart = () => {
+      const container = document.getElementById("chart-container");
+      if (!container) return;
 
-    chart.timeScale().fitContent();
+      if (!chart) {
+        chart = createChart(container, chartOptions);
+
+        candlestickSeries = chart.addCandlestickSeries({
+          upColor: "#26a69a",
+          downColor: "#ef5350",
+          borderVisible: false,
+          wickUpColor: "#26a69a",
+          wickDownColor: "#ef5350",
+        });
+
+        chart.timeScale().fitContent();
+      } else {
+        chart.resize(container.clientWidth, 600);
+      }
+    };
 
     const updateChartData = (message: KlinePayload) => {
       const candlestick = message.k;
       if (candlestick.i !== time) return;
 
       const newData: CandlestickData<Time> = {
-        time: candlestick.t / 1000 as Time,
+        time: (candlestick.t / 1000) as Time,
         open: parseFloat(candlestick.o),
         high: parseFloat(candlestick.h),
         low: parseFloat(candlestick.l),
         close: parseFloat(candlestick.c),
       };
 
-      setCoinData((prev) => [...prev, newData]);
+      const timeScale = chart.timeScale();
+      timeScale.applyOptions({
+        timeVisible: true,
+        secondsVisible: false,
+      });
+
       candlestickSeries.update(newData);
     };
-    const binanceSocket = new WebSocket(`${BINANCE_WS_URL}/${coin}@kline_${time}`);
+
+    const binanceSocket = new WebSocket(
+      `${BINANCE_WS_URL}/${coin}@kline_${time}`
+    );
 
     binanceSocket.onmessage = function (event) {
       const message: KlinePayload = JSON.parse(event.data);
-      console.log(message)
       updateChartData(message);
     };
 
+    window.addEventListener("resize", createOrUpdateChart);
+
+    createOrUpdateChart(); // Initial chart creation
+
     return () => {
-      chart.remove();
+      window.removeEventListener("resize", createOrUpdateChart);
+      if (chart) {
+        chart.remove();
+      }
       binanceSocket.close();
     };
   }, [coin, time]);
 
   return (
-    <div id="chart-container" style={{ width: "100%", height: "600px" }}></div>
+    <div
+      id="chart-container"
+      style={{ width: "100%", height: "600px", minHeight: "400px" }}
+    ></div>
   );
 }

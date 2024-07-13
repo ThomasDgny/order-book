@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAppContext } from "../context/AppContext";
 import OrderBook from "../components/home/orderBook/OrderBook";
-import { ProductIds } from "../constants/constants";
+import { Coins } from "../constants/constants";
 import { ProductIdKey, TimeFrameKey } from "../types/types";
 import ProductSelector from "../components/home/_components/ProductSelector";
 import TimeFrameSelector from "../components/home/_components/TimeFrameSelector";
@@ -22,10 +22,11 @@ export default function Home() {
     selectedPair,
     tickerData,
     balance,
+    setBalance
   } = useAppContext();
 
   const handlePairChange = (newPair: ProductIdKey) => {
-    setPair(ProductIds[newPair]);
+    setPair(Coins[newPair]);
   };
 
   const handleTimeFrameChange = (frame: TimeFrameKey) => {
@@ -47,7 +48,7 @@ export default function Home() {
       )}
       {selectedPair && (
         <div className="flex gap-5">
-          <div className="min-w-60 w-fit bg-slate-100 p-3 rounded-md">
+          <div className="min-w-60 w-fit p-3 rounded-md">
             <OrderBook
               currentBids={currentBids}
               currentAsks={currentAsks}
@@ -58,7 +59,7 @@ export default function Home() {
             selectedPair={selectedPair}
             switchTimeFrame={switchTimeFrame}
           />
-          <WalletSection balance={balance} />
+          <WalletSection setBalance={setBalance} balance={balance} />
         </div>
       )}
       {selectedPair && (

@@ -15,7 +15,7 @@ export default function ChartSection({
           <div className="h-full w-full">
             <ChartComponent coin={selectedPair} time={switchTimeFrame} />
           </div>
-          <div className="bg-white p-4 rounded-lg shadow-md">
+          <div className="bg-white p-4 rounded-lg">
             <h2 className="text-xl font-bold mb-4">Order Form</h2>
             <OrderForm />
           </div>

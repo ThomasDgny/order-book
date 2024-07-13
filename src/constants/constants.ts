@@ -4,7 +4,7 @@ export const INITIAL_BALANCE = 1000000;
 
 export const BINANCE_WS_URL = "wss://stream.binance.com:9443/ws";
 
-export const ProductIds = {
+export const Coins = {
   BTCUSD: "btcusdt",
   ETHBTC: "ethbtc",
   XRPUSD: "xrpusdt",

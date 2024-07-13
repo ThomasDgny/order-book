@@ -8,7 +8,7 @@ export default function TickerInfo({
     tickerData: any;
   }) {
     return (
-      <div className="flex justify-between items-center bg-slate-100 py-3 px-8 rounded-md">
+      <div className="flex justify-between items-center py-3 px-8 rounded-md">
         <div>
           <p className="text-sm font-medium text-slate-500">{selectedPair}</p>
           <h3 className="text-2xl font-bold">{tickerData.markPrice}</h3>

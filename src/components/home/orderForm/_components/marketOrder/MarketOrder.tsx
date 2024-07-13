@@ -36,7 +36,6 @@ export default function MarketOrder({ tickerData, balance, selectedPair, createO
 
     createOrder(newOrder);
 
-    // Reset the form fields after order submission
     if (orderType === "MARKET_BUY") {
       setBuyQuantity(0);
       setBuyTotal(0);
@@ -57,7 +56,7 @@ export default function MarketOrder({ tickerData, balance, selectedPair, createO
     <div className="w-full">
       <div className="flex justify-around">
         <MarketOrderForm
-          title="Market Buy Order"
+          title="Buy"
           quantity={buyQuantity}
           setQuantity={setBuyQuantity}
           total={buyTotal}
@@ -66,7 +65,7 @@ export default function MarketOrder({ tickerData, balance, selectedPair, createO
           buttonText="MARKET BUY"
         />
         <MarketOrderForm
-          title="Market Sell Order"
+          title="Sell"
           quantity={sellQuantity}
           setQuantity={setSellQuantity}
           total={sellTotal}

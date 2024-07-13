@@ -8,7 +8,7 @@ interface OrderFormProps {
   buttonText: string;
 }
 
-export default function MarketOrderForm({
+export default function MarketOrderForm ({
   title,
   quantity,
   setQuantity,
@@ -16,43 +16,45 @@ export default function MarketOrderForm({
   handleSubmit,
   buttonColor,
   buttonText,
-}: OrderFormProps) {
+}: OrderFormProps)  {
   return (
-    <div className="p-4 border rounded-lg">
-      <h3 className="text-lg font-semibold mb-2">{title}</h3>
-      <div className="mb-2">
-        <label className="block text-sm">Price:</label>
+    <div className="p-4 w-full">
+      <h3 className="text-2xl font-bold mb-4">{title}</h3>
+      <div className="mb-4 flex items-center">
+        <label className="w-1/3 text-sm text-gray-600">Price:</label>
         <input
           type="number"
           placeholder="Market Price"
           disabled
-          className="border rounded p-1 w-full"
+          className="border rounded p-2 w-2/3 bg-gray-100"
         />
       </div>
-      <div className="mb-2">
-        <label className="block text-sm">Quantity:</label>
+      <div className="mb-4 flex items-center">
+        <label className="w-1/3 text-sm text-gray-600">Quantity:</label>
         <input
           type="number"
           value={quantity}
-          onChange={(e) => setQuantity(parseFloat(e.target.value))}
-          className="border rounded p-1 w-full"
+          onChange={(e) => setQuantity(parseFloat(e.target.value) || 0)}
+          className="border rounded p-2 w-2/3"
         />
       </div>
-      <div className="mb-2">
-        <label className="block text-sm">Total:</label>
+      <div className="mb-4 flex items-center">
+        <label className="w-1/3 text-sm text-gray-600">Total:</label>
         <input
           type="number"
           value={total}
           readOnly
-          className="border rounded p-1 w-full"
+          className="border rounded p-2 w-2/3 bg-gray-100"
         />
       </div>
       <button
         onClick={handleSubmit}
-        className={`${buttonColor} text-white px-4 py-2 rounded`}
+        className={`block w-full ${buttonColor} text-white px-4 py-2 rounded-md`}
       >
         {buttonText}
       </button>
     </div>
   );
-}
+};
+
+
