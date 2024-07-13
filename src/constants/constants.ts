@@ -11,8 +11,6 @@ export const Coins = {
   LTCUSD: "ltcusdt",
 };
 
-// constants/constants.ts
-
 export const TimeFrames = {
   "1m": "1m",
   "5m": "5m",
@@ -20,3 +18,15 @@ export const TimeFrames = {
   "1h": "1h",
   "12h": "12h",
 };
+
+export const tableHeaders = [
+  { key: "orderId", label: "Order ID" },
+  { key: "orderType", label: "Order Type" },
+  { key: "pair", label: "Pair" },
+  { key: "price", label: "Price" },
+  { key: "quantity", label: "Quantity" },
+  { key: "total", label: "Total" },
+  { key: "creationDate", label: "Creation Date" },
+  { key: "status", label: "Status" },
+  { key: "action", label: "Action" },
+];

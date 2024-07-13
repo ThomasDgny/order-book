@@ -72,26 +72,39 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({
 
   const cancelOrder = (orderId: string) => {
     let orderCanceled = false;
-
-    setOrderHistory((prevOrders) =>
-      prevOrders.map((order) => {
-        if (!orderCanceled && order.orderId === orderId && order.status !== "Filled") {
-          orderCanceled = true;
-          if (order.status === "Pending" && order.orderType === "BUY_LIMIT") {
-            const refund = order.price * order.quantity;
-            setBalance((prevBalance) => prevBalance + refund);
-          }
-          return { ...order, status: "Canceled", completionDate: new Date() };
+  
+    const updatedOrderHistory = orderHistory.map((order) => {
+      if (!orderCanceled && order.orderId === orderId && order.status !== "Filled") {
+        orderCanceled = true;
+        const updatedOrder: Order = {
+          ...order,
+          status: "Canceled",
+          completionDate: new Date(),
+        };
+  
+        if (order.status === "Pending" && order.orderType === "BUY_LIMIT") {
+          const refund = order.price * order.quantity;
+          setBalance((prevBalance) => prevBalance + refund);
         }
-        return order;
-      })
-    );
 
+        if (order.status === "Pending" && order.orderType === "SELL_LIMIT") {
+          const refund = order.price * order.quantity;
+          setBalance((prevBalance) => prevBalance - refund);
+        }
+  
+        return updatedOrder;
+      }
+      return order;
+    });
+  
     if (!orderCanceled) {
       console.error("Order not found or already completed.");
+      return;
     }
-  };
 
+    setOrderHistory(updatedOrderHistory);
+  };
+  
   const checkOrderMatches = () => {
     setOrderHistory((prevOrders) =>
       prevOrders.map((order) => {

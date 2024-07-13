@@ -20,6 +20,7 @@ export default function MarketOrderForm({
   buttonText,
 }: OrderFormProps) {
   const pair = selectedPair.toLocaleUpperCase();
+  const isDisabled = quantity <= 0;
 
   return (
     <div className="p-4 w-full">
@@ -53,7 +54,10 @@ export default function MarketOrderForm({
       </div>
       <button
         onClick={handleSubmit}
-        className={`block w-full ${buttonColor} text-white px-4 py-2 rounded-md`}
+        className={`block w-full px-4 py-2 rounded-md ${
+          isDisabled ? "bg-gray-500 cursor-not-allowed" : buttonColor
+        } text-white`}
+        disabled={isDisabled}
       >
         {`${buttonText} ${pair}`}
       </button>

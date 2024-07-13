@@ -86,7 +86,7 @@ export default function ChartComponent({
 
     window.addEventListener("resize", createOrUpdateChart);
 
-    createOrUpdateChart(); // Initial chart creation
+    createOrUpdateChart();
 
     return () => {
       window.removeEventListener("resize", createOrUpdateChart);
@@ -100,7 +100,7 @@ export default function ChartComponent({
   return (
     <div
       id="chart-container"
-      style={{ width: "100%", height: "600px", minHeight: "400px" }}
+      style={{ width: "100%", height: "100%", minHeight: "400px" }}
     ></div>
   );
 }

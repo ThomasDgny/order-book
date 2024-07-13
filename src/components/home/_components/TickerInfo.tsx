@@ -22,7 +22,7 @@ export default function TickerInfo({
         />
         <h3 className="text-2xl font-bold">{tickerData.markPrice}</h3>
         <p className="text-sm font-medium text-slate-500">
-          {selectedPair && `Selected Pair: ${selectedPair}`}
+          {tickerData.markPrice}
         </p>
       </div>
       <div className="flex gap-10">

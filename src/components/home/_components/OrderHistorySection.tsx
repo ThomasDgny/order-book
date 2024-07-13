@@ -1,4 +1,4 @@
-import { Order } from '@/types/types';
+import { Order } from '../../../types/types';
 import OrderHistory from '../orderHistory/OrderHistory';
 
 export default function OrderHistorySection({

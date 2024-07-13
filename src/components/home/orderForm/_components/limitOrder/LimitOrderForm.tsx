@@ -1,3 +1,5 @@
+import React from "react";
+
 interface OrderFormProps {
   title: string;
   selectedPair: string;
@@ -24,7 +26,8 @@ export default function LimitOrderForm({
   buttonText,
 }: OrderFormProps) {
   const pair = selectedPair.toLocaleUpperCase();
-  
+  const isDisabled = price <= 0 || quantity <= 0;
+
   return (
     <div className="p-4 w-full">
       <h3 className="text-2xl font-bold mb-4">{title}</h3>
@@ -57,7 +60,10 @@ export default function LimitOrderForm({
       </div>
       <button
         onClick={handleSubmit}
-        className={`block w-full ${buttonColor} text-white px-4 py-2 rounded-md`}
+        className={`block w-full px-4 py-2 rounded-md ${
+          isDisabled ? 'bg-gray-500 cursor-not-allowed' : buttonColor
+        } text-white`}
+        disabled={isDisabled}
       >
         {`${buttonText} ${pair}`}
       </button>

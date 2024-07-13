@@ -9,9 +9,27 @@ export default function OrderForm() {
 
   return (
     <div className="p-4">
-      <div className="flex gap-3">
-        <button onClick={() => setActiveTab("limit")}>Limit</button>
-        <button onClick={() => setActiveTab("market")}>Market</button>
+      <div className="flex gap-3 mb-4">
+        <button
+          onClick={() => setActiveTab("limit")}
+          className={`px-4 py-2 text-sm font-medium rounded-md ${
+            activeTab === "limit"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          Limit
+        </button>
+        <button
+          onClick={() => setActiveTab("market")}
+          className={`px-4 py-2 text-sm font-medium rounded-md ${
+            activeTab === "market"
+              ? "bg-blue-500 text-white"
+              : "bg-gray-200 text-gray-700"
+          }`}
+        >
+          Market
+        </button>
       </div>
       <div className="flex justify-between gap-10">
         {activeTab === "limit" && (

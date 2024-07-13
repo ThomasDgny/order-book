@@ -14,11 +14,6 @@ export default function LimitOrder({ tickerData, balance, selectedPair, createOr
   const [sellTotal, setSellTotal] = useState<number>(0);
 
   useEffect(() => {
-    setBuyPrice(currentIndex);
-    setSellPrice(currentIndex);
-  }, [currentIndex]);
-
-  useEffect(() => {
     setBuyTotal(buyPrice * buyQuantity);
   }, [buyPrice, buyQuantity]);
 

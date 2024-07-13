@@ -1,4 +1,4 @@
-import React from "react";
+import { tableHeaders } from "../../../constants/constants";
 import { Order } from "../../../types/types";
 import { format } from "date-fns";
 
@@ -27,18 +27,6 @@ export default function OrderHistory({
         return "";
     }
   };
-
-  const tableHeaders = [
-    { key: "orderId", label: "Order ID" },
-    { key: "orderType", label: "Order Type" },
-    { key: "pair", label: "Pair" },
-    { key: "price", label: "Price" },
-    { key: "quantity", label: "Quantity" },
-    { key: "total", label: "Total" },
-    { key: "creationDate", label: "Creation Date" },
-    { key: "status", label: "Status" },
-    { key: "action", label: "Action" },
-  ];
 
   return (
     <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">

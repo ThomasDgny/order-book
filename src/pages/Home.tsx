@@ -3,7 +3,6 @@ import { useAppContext } from "../context/AppContext";
 import { Coins } from "../constants/constants";
 import { ProductIdKey, TimeFrameKey } from "../types/types";
 import OrderHistorySection from "../components/home/_components/OrderHistorySection";
-import TimeFrameSelector from "../components/home/_components/TimeFrameSelector";
 import WalletSection from "../components/home/_components/WalletSection";
 import ChartSection from "../components/home/_components/ChartSection";
 import TickerInfo from "../components/home/_components/TickerInfo";
@@ -34,10 +33,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-3 p-2 bg-slate-50">
-      <TimeFrameSelector
-        switchTimeFrame={switchTimeFrame}
-        handleTimeFrameChange={handleTimeFrameChange}
-      />
       {selectedPair && (
         <TickerInfo
           handlePairChange={handlePairChange}
@@ -57,6 +52,7 @@ export default function Home() {
           <ChartSection
             selectedPair={selectedPair}
             switchTimeFrame={switchTimeFrame}
+            handleTimeFrameChange={handleTimeFrameChange}
           />
           <WalletSection setBalance={setBalance} balance={balance} />
         </div>
