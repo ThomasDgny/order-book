@@ -93,6 +93,8 @@ Helper functions are defined in `orderHelpers.ts` to keep the context provider c
 - `completeOrder`: Handles the logic for marking an order as completed.
 - `cancelOrder`: Handles the logic for canceling an order.
 - `checkOrderMatches`: Checks if any pending orders match the current market conditions and completes them if they do.
+- `calculateRunningTotal(entries: OrderBookEntry[]): OrderBookEntry[]`: Calculates the running total for each entry in the order book.
+- `manageArraySize(prevArray: OrderBookEntry[], newArray: OrderBookEntry[], maxSize: number = 15): OrderBookEntry[]`: Manages the size of an array by combining and sorting new and previous entries, then truncating it to a specified maximum size.
 
 ## Custom Hooks
 
