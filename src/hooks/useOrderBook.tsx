@@ -26,7 +26,6 @@ export const useOrderBook = (coinID: string) => {
     onMessage: (event: WebSocketEventMap["message"]) => {
       const data = JSON.parse(event.data);
       if (data.e === "depthUpdate") {
-        console.log("Received data:", data);
         processOrderBookData(data);
       }
     },
@@ -69,8 +68,6 @@ export const useOrderBook = (coinID: string) => {
 
   const processOrderBookData = useCallback((data: any) => {
     if (data.e === "depthUpdate") {
-      console.log("Processing depth update data:", data);
-
       const updatedBids = data.b.map(([price, size]: [string, string]) => ({
         price: parseFloat(price),
         size: parseFloat(size),

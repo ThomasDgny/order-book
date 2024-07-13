@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { BINANCE_WS_URL } from "../constants/constants";
-import { setTickerData } from "../types/types";
+import { TickerData } from "../types/types";
 import useWebSocket from "react-use-websocket";
 
 export const useTicker = (coinID: string) => {
   const [subscriptionId, setSubscriptionId] = useState<number | null>(null);
-  const [tickerData, setTickerData] = useState<setTickerData>({
+  const [tickerData, setTickerData] = useState<TickerData>({
     markPrice: 0,
     volume: 0,
     high: 0,
@@ -23,13 +23,13 @@ export const useTicker = (coinID: string) => {
     onMessage: (event: WebSocketEventMap["message"]) => {
       const data = JSON.parse(event.data);
       if (data.e === "24hrTicker") {
-        console.log(data)
         processTickerData(data);
       }
     },
   });
 
-    const unsubscribe = useCallback((id: number, coin: string) => {
+  const unsubscribe = useCallback(
+    (id: number, coin: string) => {
       const unsubscribeMessage = {
         method: "UNSUBSCRIBE",
         params: [`${coin}@ticker`],
@@ -42,8 +42,7 @@ export const useTicker = (coinID: string) => {
     [sendJsonMessage]
   );
 
-
-    const subscribe = useCallback(
+  const subscribe = useCallback(
     (product: string) => {
       if (subscriptionId !== null) {
         unsubscribe(subscriptionId, product);

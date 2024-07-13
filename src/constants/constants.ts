@@ -14,9 +14,9 @@ export const ProductIds = {
 // constants/constants.ts
 
 export const TimeFrames = {
-  "1min": 60 * 1000,
-  "5min": 5 * 60 * 1000, 
-  "15min": 15 * 60 * 1000, 
-  "1h": 60 * 60 * 1000, 
-  "12h": 12 * 60 * 60 * 1000, 
-} ;
+  "1m": "1m",
+  "5m": "5m",
+  "15m": "15m",
+  "1h": "1h",
+  "12h": "12h",
+};

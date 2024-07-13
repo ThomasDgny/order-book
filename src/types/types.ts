@@ -1,3 +1,8 @@
+import { ProductIds, TimeFrames } from "../constants/constants";
+
+export type ProductIdKey = keyof typeof ProductIds;
+export type TimeFrameKey = keyof typeof TimeFrames;
+
 export interface OrderBookEntry {
   price: number;
   size: number;
@@ -39,14 +44,14 @@ export interface AppContextType {
   setPair: (pair: string) => void;
   currentBids: OrderBookEntry[];
   currentAsks: OrderBookEntry[];
-  tickerData: setTickerData;
+  tickerData: TickerData;
   loading: boolean;
   orderHistory: Order[];
   createOrder: (order: Order) => void;
   cancelOrder: (orderId: string) => void;
 }
 
-export interface setTickerData {
+export interface TickerData {
   markPrice: number;
   volume: number;
   high: number;
@@ -57,6 +62,39 @@ export interface setTickerData {
 export interface OrderFormProps {
   selectedPair: string;
   balance: number;
-  tickerData: setTickerData;
+  tickerData: TickerData;
   createOrder: (order: Order) => void;
 }
+
+export interface CandleData {
+  t: number;
+  o: string;
+  h: string;
+  l: string;
+  c: string;
+}
+
+export type KlinePayload = {
+  e: "kline";
+  E: number;
+  s: string;
+  k: {
+    t: number;
+    T: number;
+    s: string;
+    i: string;
+    f: number;
+    L: number;
+    o: string;
+    c: string;
+    h: string;
+    l: string;
+    v: string;
+    n: number;
+    q: string;
+    x: boolean;
+    V: string;
+    Q: string;
+    B: string;
+  };
+};
