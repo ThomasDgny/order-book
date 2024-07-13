@@ -59,8 +59,6 @@ src
 ├── hooks
 │   ├── useOrderBook.tsx
 │   └── useTicker.tsx
-├── lib
-│   └── utils.ts
 ├── mock
 │   ├── candlesMock.ts
 │   └── MockPrice.ts
