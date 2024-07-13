@@ -22,7 +22,7 @@ This project is a web-based crypto trading platform that allows users to place m
 - **Custom Hooks**: For fetching order book and ticker data.
 
 ## Project Structure
-
+```
 src
 ├── components
 │   ├── home
@@ -68,7 +68,7 @@ src
 │   └── Home.tsx
 └── types
     └── types.ts
-
+```
 ## Usage
 
 1. **Select a Cryptocurrency Pair**: Use the pair selector to choose the cryptocurrency pair you want to trade.
