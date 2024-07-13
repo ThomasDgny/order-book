@@ -1,14 +1,13 @@
 import React, { useState } from "react";
 import { useAppContext } from "../context/AppContext";
-import OrderBook from "../components/home/orderBook/OrderBook";
 import { Coins } from "../constants/constants";
 import { ProductIdKey, TimeFrameKey } from "../types/types";
-import ProductSelector from "../components/home/_components/ProductSelector";
-import TimeFrameSelector from "../components/home/_components/TimeFrameSelector";
-import ChartSection from "../components/home/_components/ChartSection";
 import OrderHistorySection from "../components/home/_components/OrderHistorySection";
+import TimeFrameSelector from "../components/home/_components/TimeFrameSelector";
 import WalletSection from "../components/home/_components/WalletSection";
+import ChartSection from "../components/home/_components/ChartSection";
 import TickerInfo from "../components/home/_components/TickerInfo";
+import OrderBook from "../components/home/orderBook/OrderBook";
 
 export default function Home() {
   const [switchTimeFrame, setSwitchTimeFrame] = useState<TimeFrameKey>("1m");
@@ -35,16 +34,16 @@ export default function Home() {
 
   return (
     <div className="flex flex-col gap-3 p-2 bg-slate-50">
-      <ProductSelector
-        selectedPair={selectedPair}
-        handlePairChange={handlePairChange}
-      />
       <TimeFrameSelector
         switchTimeFrame={switchTimeFrame}
         handleTimeFrameChange={handleTimeFrameChange}
       />
       {selectedPair && (
-        <TickerInfo selectedPair={selectedPair} tickerData={tickerData} />
+        <TickerInfo
+          handlePairChange={handlePairChange}
+          selectedPair={selectedPair}
+          tickerData={tickerData}
+        />
       )}
       {selectedPair && (
         <div className="flex gap-5">

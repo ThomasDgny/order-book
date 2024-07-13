@@ -1,4 +1,4 @@
-export default function InfoCard({ label, value }: { label: string; value: string }) {
+export default function InfoCard({ label, value }: { label: string; value: number }) {
     return (
       <div>
         <p className="text-sm font-medium text-slate-500">{label}</p>
