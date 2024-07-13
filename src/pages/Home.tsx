@@ -22,7 +22,7 @@ export default function Home() {
     selectedPair,
     tickerData,
     balance,
-    setBalance
+    setBalance,
   } = useAppContext();
 
   const handlePairChange = (newPair: ProductIdKey) => {

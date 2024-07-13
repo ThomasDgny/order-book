@@ -7,14 +7,38 @@ interface OrderHistoryProps {
   cancelOrder: (orderId: string) => void;
 }
 
-const OrderHistory: React.FC<OrderHistoryProps> = ({
+export default function OrderHistory({
   orderHistory,
   cancelOrder,
-}) => {
-  
+}: OrderHistoryProps) {
   const formatDateTime = (dateTime: Date) => {
     return format(dateTime, "yyyy-MM-dd HH:mm:ss");
   };
+
+  const getStatusBackgroundColor = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "Filled":
+        return "bg-green-100 text-green-800";
+      case "Canceled":
+        return "bg-red-100 text-red-800";
+      default:
+        return "";
+    }
+  };
+
+  const tableHeaders = [
+    { key: "orderId", label: "Order ID" },
+    { key: "orderType", label: "Order Type" },
+    { key: "pair", label: "Pair" },
+    { key: "price", label: "Price" },
+    { key: "quantity", label: "Quantity" },
+    { key: "total", label: "Total" },
+    { key: "creationDate", label: "Creation Date" },
+    { key: "status", label: "Status" },
+    { key: "action", label: "Action" },
+  ];
 
   return (
     <div className="overflow-hidden border border-gray-200 rounded-lg shadow-sm">
@@ -22,33 +46,14 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Order ID
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Order Type
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Pair
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Price
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Quantity
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Creation Date
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-              <th className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Action
-              </th>
+              {tableHeaders.map((item, index) => (
+                <th
+                  key={index}
+                  className="px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider"
+                >
+                  {item.label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
@@ -77,11 +82,9 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      order.status === "Pending"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-green-100 text-green-800"
-                    }`}
+                    className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBackgroundColor(
+                      order.status
+                    )}`}
                   >
                     {order.status}
                   </span>
@@ -106,6 +109,4 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({
       </div>
     </div>
   );
-};
-
-export default OrderHistory;
+}
