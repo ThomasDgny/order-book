@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import io from "socket.io-client";
 import { BACKEND_BASE_API } from "../constants/constants";
+import io from "socket.io-client";
 
 export const useTicker = (coinID: string) => {
   const [tickerData, setTickerData] = useState({
