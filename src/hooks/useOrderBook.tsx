@@ -1,108 +1,62 @@
-import { useCallback, useEffect, useState } from "react";
-import { BINANCE_WS_URL } from "../constants/constants";
+import { useEffect, useState } from "react";
+import { BACKEND_BASE_API } from "../constants/constants";
 import { OrderBookEntry } from "../types/types";
-import useWebSocket, { ReadyState } from "react-use-websocket";
-import { calculateRunningTotal, manageArraySize } from "../helper/orderHelper";
+import io from "socket.io-client";
+import axios from "axios";
 
-export const useOrderBook = (coinID: string) => {
-  const [subscriptionId, setSubscriptionId] = useState<number | null>(null);
+export const useOrderBook = (selectedPair: string) => {
+  const [coinID, setCoinID] = useState(selectedPair);
   const [currentBids, setCurrentBids] = useState<OrderBookEntry[]>([]);
   const [currentAsks, setCurrentAsks] = useState<OrderBookEntry[]>([]);
+  const [currentPair, setCurrentPair] = useState<string>("");
   const [loading, setLoading] = useState(true);
 
-  const { sendJsonMessage, readyState } = useWebSocket(BINANCE_WS_URL, {
-    shouldReconnect: () => true,
-    onOpen: () => {
-      console.log("WebSocket connection opened.");
-      subscribe(coinID);
-    },
-    onClose: () => {
-      console.log("WebSocket connection closed.");
-      setSubscriptionId(null);
-    },
-    onError: (event) => {
-      console.error("WebSocket error:", event);
-    },
-    onMessage: (event: WebSocketEventMap["message"]) => {
-      const data = JSON.parse(event.data);
-      if (data.e === "depthUpdate") {
-        processOrderBookData(data);
-      }
-    },
-  });
-
-  const unsubscribe = useCallback(
-    (id: number, product: string) => {
-      const unsubscribeMessage = {
-        method: "UNSUBSCRIBE",
-        params: [`${product}@depth`],
-        id: id,
-      };
-
-      sendJsonMessage(unsubscribeMessage);
-      console.log(`Unsubscribed from ${product} with id ${id}`);
-    },
-    [sendJsonMessage]
-  );
-
-  const subscribe = useCallback(
-    (coin: string) => {
-      if (subscriptionId !== null) {
-        unsubscribe(subscriptionId, coin);
-      }
-
-      const id = 1;
-      setSubscriptionId(id);
-
-      const subscribeMessage = {
-        method: "SUBSCRIBE",
-        params: [`${coin}@depth`],
-        id: id,
-      };
-
-      sendJsonMessage(subscribeMessage);
-      console.log(`Subscribed to ${coin} with id ${id}`);
-    },
-    [sendJsonMessage, subscriptionId, unsubscribe]
-  );
-
-  const processOrderBookData = useCallback((data: any) => {
-    if (data.e === "depthUpdate") {
-      const updatedBids = data.b.map(([price, size]: [string, string]) => ({
-        price: parseFloat(price),
-        size: parseFloat(size),
-        total: 0,
-      }));
-
-      const updatedAsks = data.a.map(([price, size]: [string, string]) => ({
-        price: parseFloat(price),
-        size: parseFloat(size),
-        total: 0,
-      }));
-
-      const bidsWithTotal = calculateRunningTotal(updatedBids);
-      const asksWithTotal = calculateRunningTotal(updatedAsks);
-
-      setCurrentBids((prevBids) => manageArraySize(prevBids, bidsWithTotal));
-      setCurrentAsks((prevAsks) => manageArraySize(prevAsks, asksWithTotal));
-
-      setLoading(false);
+  const changeCoin = async (newCoinID: string) => {
+    try {
+      const response = await axios.post(`${BACKEND_BASE_API}/api/setcoin`, {
+        coinID: newCoinID,
+      });
+      console.log(response.data);
+      setCoinID(newCoinID);
+    } catch (error) {
+      console.error("Error switching coin:", error);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    if (readyState === ReadyState.OPEN) {
-      subscribe(coinID);
-      console.log(`Subscribed to ${coinID}`);
-    }
+    const socket = io(BACKEND_BASE_API);
+
+    changeCoin(selectedPair);
+
+    socket.on("orderBookUpdate", (data) => {
+      setCurrentPair(data.pair);
+      setCurrentBids(data.bids);
+      setCurrentAsks(data.asks);
+      setLoading(false);
+    });
+
+    socket.on("connect", () => {
+      console.log("Connected to WebSocket server");
+      socket.emit("changeCoin", coinID);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Disconnected from WebSocket server");
+    });
+
+    socket.on("reconnect_attempt", () => {
+      console.log("Attempting to reconnect to WebSocket server");
+    });
+
+    socket.on("reconnect", () => {
+      console.log("Reconnected to WebSocket server");
+      socket.emit("changeCoin", coinID);
+    });
 
     return () => {
-      if (subscriptionId !== null) {
-        unsubscribe(subscriptionId, coinID);
-        console.log(`Unsubscribed from ${coinID}`);
-      }
+      socket.disconnect();
     };
-  }, [coinID, readyState, subscribe, unsubscribe, subscriptionId]);
+  }, [selectedPair]);
 
-  return { currentBids, currentAsks, loading };
+  return { currentBids, currentAsks, currentPair, loading };
 };

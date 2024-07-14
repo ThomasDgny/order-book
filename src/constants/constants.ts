@@ -3,6 +3,8 @@ export const ORDERBOOK_LEVELS: number = 15;
 export const INITIAL_BALANCE = 1000000;
 
 export const BINANCE_WS_URL = "wss://stream.binance.com:9443/ws";
+export const BACKEND_BASE_API = "https://order-book-server-zeta.vercel.app";
+export const BACKEND_TEST_API = "http://localhost:4000";
 
 export const Coins = {
   BTCUSD: "btcusdt",

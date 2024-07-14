@@ -15,7 +15,7 @@ export default function ChartSection({
   return (
     <div className="flex-1 w-full">
       <div className="flex flex-col gap-10 h-full">
-        <div className="h-[400px] w-full">
+        <div className="max-h-[400px] w-full">
           <TimeFrameSelector
             switchTimeFrame={switchTimeFrame}
             handleTimeFrameChange={handleTimeFrameChange}
