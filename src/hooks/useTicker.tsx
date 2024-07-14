@@ -7,7 +7,9 @@ export const useTicker = (coinID: string) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const socket = io(BACKEND_BASE_API);
+    const socket = io(BACKEND_BASE_API, {
+      withCredentials: true, 
+    });
 
     socket.on("tickerUpdate", (data) => {
       setTickerData({
