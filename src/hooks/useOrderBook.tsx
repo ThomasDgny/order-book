@@ -13,11 +13,9 @@ export const useOrderBook = (selectedPair: string) => {
 
   const changeCoin = async (newCoinID: string) => {
     try {
-      const response = await axios.post(
-        `${BACKEND_BASE_API}/api/setcoin`,
-        { coinID: newCoinID },
-        { withCredentials: true }
-      );
+      const response = await axios.post(`${BACKEND_BASE_API}/api/setcoin`, {
+        coinID: newCoinID,
+      });
       console.log(response.data);
       setCoinID(newCoinID);
     } catch (error) {

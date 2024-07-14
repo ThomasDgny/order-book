@@ -3,13 +3,17 @@ import io from "socket.io-client";
 import { BACKEND_BASE_API } from "../constants/constants";
 
 export const useTicker = (coinID: string) => {
-  const [tickerData, setTickerData] = useState({markPrice: 0, volume: 0, high: 0, low: 0, change: 0});
+  const [tickerData, setTickerData] = useState({
+    markPrice: 0,
+    volume: 0,
+    high: 0,
+    low: 0,
+    change: 0,
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const socket = io(BACKEND_BASE_API, {
-      withCredentials: true, 
-    });
+    const socket = io(BACKEND_BASE_API);
 
     socket.on("tickerUpdate", (data) => {
       setTickerData({
