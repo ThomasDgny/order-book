@@ -99,13 +99,14 @@ export const cancelOrderHelper = (
 export const checkOrderMatchesHelper = (
   currentBids: any[],
   currentAsks: any[],
+  currentPair: string,
   setOrderHistory: React.Dispatch<React.SetStateAction<Order[]>>,
   completeOrder: (orderId: string) => void,
   setBalance: React.Dispatch<React.SetStateAction<number>>
 ) => {
   setOrderHistory((prevOrders) =>
     prevOrders.map((order) => {
-      if (order.status === "Pending") {
+      if (order.status === "Pending" && order.pair === currentPair) {
         if (order.orderType === "BUY_LIMIT") {
           const matchingAsk = currentAsks.find((ask) => ask.price <= order.price);
           if (matchingAsk) completeOrder(order.orderId);

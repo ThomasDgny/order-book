@@ -22,7 +22,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
   const [balance, setBalance] = useState<number>(INITIAL_BALANCE);
   const [orderHistory, setOrderHistory] = useState<Order[]>([]);
 
-  const { currentBids, currentAsks, loading} = useOrderBook(selectedPair);
+  const { currentBids, currentAsks, currentPair, loading} = useOrderBook(selectedPair);
   const { tickerData } = useTicker(selectedPair);
 
   const setPair = (pair: string) => setSelectedPair(pair);
@@ -40,7 +40,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
   };
 
   const checkOrderMatches = () => {
-    checkOrderMatchesHelper(currentBids, currentAsks, setOrderHistory, completeOrder, setBalance);
+    checkOrderMatchesHelper(currentBids, currentAsks, currentPair, setOrderHistory, completeOrder, setBalance,);
   };
 
   useEffect(() => {
