@@ -184,7 +184,7 @@ npm start
 
 1. Clone the Frontend repository from GitHub:
 ```
-git clone https://github.com/ThomasDgny/order-book.gitt
+git clone https://github.com/ThomasDgny/order-book.git
 ```
 
 3. Navigate into the Frontend project directory:
@@ -204,6 +204,9 @@ npm start
 
 
 Your backend server should now be running and listening for requests on `localhost:4000`.
+
+- Server: [Connect on LinkedIn](https://github.com/ThomasDgny/order-book-server)
+
 
 ## Conclusion
 
