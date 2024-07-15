@@ -144,14 +144,64 @@ In the project, several constants are defined to maintain consistency and ease o
 - `BINANCE_WS_URL`: WebSocket URL for connecting to the Binance stream, set to "wss://stream.binance.com:9443/ws".
 - `Coins`: Object containing various cryptocurrency pairs
 
+## Local Development
+
+To run this project locally, you'll need to set up and run both the frontend and backend servers.
+
+### Prerequisites
+
+Make sure you have Node.js installed on your local development machine.
+
+### Backend Setup
+
+1. Clone the backend repository from GitHub:
+```
+git clone https://github.com/ThomasDgny/order-book-server.git
+```
+
+3. Navigate into the backend project directory:
+```
+cd order-book-server
+```
+
+4. Install backend dependencies:
+```
+npm install
+```
+
+4.Start the backend server (runs on localhost:4000):
+```
+npm start
+```
+
+### Frontend Setup
+
+1. Clone the Frontend repository from GitHub:
+```
+git clone https://github.com/ThomasDgny/order-book.gitt
+```
+
+3. Navigate into the Frontend project directory:
+```
+cd order-book
+```
+
+4. Install Frontend dependencies:
+```
+npm install
+```
+
+4.Start the backend server (runs on localhost:4000):
+```
+npm start
+```
+
+
+Your backend server should now be running and listening for requests on `localhost:4000`.
+
 ## Conclusion
 
 Thank you for exploring this project! If you have any feedback, questions, or suggestions, please feel free to reach out. Your insights are valuable and will help in further improving this application.
-
-### Links
-
-- **Live Demo**: [View Live Demo](https://order-book-two.vercel.app/)
-- **GitHub Repository**: [Visit GitHub](https://github.com/ThomasDgny/order-book)
 
 ### Contact
 
