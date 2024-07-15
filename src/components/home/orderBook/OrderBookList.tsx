@@ -23,9 +23,9 @@ interface OrderBookListProps {
                 <th className="text-xs py-1 text-left">Amount</th>
                 <th className="text-xs py-1 text-left">Total</th>
               </tr>
-              <p className="text-xs font-bold mt-3">{title}</p>
             </thead>
           )}
+          <p className="text-xs font-bold mt-3">{title}</p>
           <tbody>
             {entries.map((entry, index) => (
               <tr key={index}>
