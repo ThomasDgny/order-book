@@ -205,7 +205,7 @@ npm start
 
 Your backend server should now be running and listening for requests on `localhost:4000`.
 
-- Server: [Connect on LinkedIn](https://github.com/ThomasDgny/order-book-server)
+- Server: [Server Repo](https://github.com/ThomasDgny/order-book-server)
 
 
 ## Conclusion
