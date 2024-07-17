@@ -7,9 +7,15 @@ import {
   Time,
   ISeriesApi,
 } from "lightweight-charts";
-import {useRealTimeChart} from "../../../hooks/useRealTimeChart";
+import { useRealTimeChart } from "../../../hooks/useRealTimeChart";
 
-export default function ChartComponent({ coin, time }: { coin: string; time: string }) {
+export default function ChartComponent({
+  coin,
+  time,
+}: {
+  coin: string;
+  time: string;
+}) {
   const chartData = useRealTimeChart(coin, time);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<ReturnType<typeof createChart>>();
@@ -38,6 +44,12 @@ export default function ChartComponent({ coin, time }: { coin: string; time: str
         wickDownColor: "#ef5350",
       });
       chartRef.current.timeScale().fitContent();
+
+      const timeScale = chartRef.current.timeScale();
+      timeScale.applyOptions({
+        timeVisible: true,
+        secondsVisible: false,
+      });
     }
 
     const resizeChart = () => {
