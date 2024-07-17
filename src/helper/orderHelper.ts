@@ -96,8 +96,8 @@ export const cancelOrderHelper = (
 };
 
 export const checkOrderMatchesHelper = (
-  currentBids: any[],
-  currentAsks: any[],
+  currentBids: OrderBookEntry[],
+  currentAsks: OrderBookEntry[],
   currentPair: string,
   setOrderHistory: React.Dispatch<React.SetStateAction<Order[]>>,
   completeOrder: (orderId: string) => void,

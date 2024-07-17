@@ -9,20 +9,10 @@ export interface OrderBookEntry {
   total: number;
 }
 
-export interface Delta {
-  bids?: number[][];
-  asks?: number[][];
-}
-
-export interface OrderbookState {
-  market: string;
-  rawBids: number[][];
-  bids: number[][];
-  maxTotalBids: number;
-  rawAsks: number[][];
-  asks: number[][];
-  maxTotalAsks: number;
-  groupingSize: number;
+export interface OrderBookUpdate {
+  bids: OrderBookEntry[];
+  asks: OrderBookEntry[];
+  pair: string;
 }
 
 export interface Order {
@@ -35,6 +25,14 @@ export interface Order {
   creationDate: Date;
   completionDate: Date | null;
   status: "Pending" | "Filled" | "Canceled";
+}
+
+export interface TickerData {
+  markPrice: number;
+  volume: number;
+  high: number;
+  low: number;
+  change: number;
 }
 
 export interface AppContextType {
@@ -51,14 +49,6 @@ export interface AppContextType {
   cancelOrder: (orderId: string) => void;
 }
 
-export interface TickerData {
-  markPrice: number;
-  volume: number;
-  high: number;
-  low: number;
-  change: number;
-}
-
 export interface OrderFormProps {
   selectedPair: string;
   balance: number;
@@ -67,11 +57,11 @@ export interface OrderFormProps {
 }
 
 export interface CandleData {
-  t: number;
-  o: string;
+  c: string;
+  v: string;
   h: string;
   l: string;
-  c: string;
+  p: string;
 }
 
 export type KlinePayload = {

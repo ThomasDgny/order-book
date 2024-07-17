@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { BACKEND_BASE_API } from "../constants/constants";
 import { manageArraySize } from "../helper/orderHelper";
-import { OrderBookEntry } from "../types/types";
+import { OrderBookEntry, OrderBookUpdate } from "../types/types";
 import io from "socket.io-client";
 import axios from "axios";
 
@@ -26,7 +26,7 @@ export const useOrderBook = (selectedPair: string) => {
 
   useEffect(() => {
     const socket = io(BACKEND_BASE_API);
-    const handleOrderBookUpdate = (data: any) => {
+    const handleOrderBookUpdate = (data: OrderBookUpdate) => {
       setCurrentBids((prevBids) => manageArraySize(prevBids, data.bids, data.pair));
       setCurrentAsks((prevAsks) => manageArraySize(prevAsks, data.asks, data.pair));
       setCurrentPair(data.pair); 

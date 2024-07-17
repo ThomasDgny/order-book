@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { BACKEND_BASE_API } from "../constants/constants";
 import io from "socket.io-client";
+import { CandleData } from "../types/types";
 
 export const useTicker = (coinID: string) => {
   const [tickerData, setTickerData] = useState({
@@ -12,7 +13,7 @@ export const useTicker = (coinID: string) => {
   });
   const [loading, setLoading] = useState(true);
 
-  const handleTickerUpdate = useCallback((data: any) => {
+  const handleTickerUpdate = useCallback((data: CandleData) => {
     setTickerData({
       markPrice: parseFloat(data.c),
       volume: parseFloat(data.v),
