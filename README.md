@@ -4,6 +4,11 @@
 
 This project is a web-based crypto trading platform that allows users to place market and limit orders for various cryptocurrency pairs. The platform provides real-time order book data, ticker information, and allows users to manage their balance and order history.
 
+![Ekran görüntüsü 2024-07-16 002422](https://github.com/user-attachments/assets/df50336a-f881-4e4c-bb6d-a492d7381382)
+![Ekran görüntüsü 2024-07-16 003022](https://github.com/user-attachments/assets/2aaa25d1-8b6f-41f7-b51a-ffad5ee132eb)
+
+
+
 ## Features
 
 - **Real-Time Order Book Data**: Fetches and displays the current bids and asks for the selected cryptocurrency pair.
@@ -59,6 +64,7 @@ src
 ├── hooks
 │   ├── useOrderBook.tsx
 │   └── useTicker.tsx
+|   └── useRealTimeChart.tsx
 ├── mock
 │   ├── candlesMock.ts
 │   └── MockPrice.ts
@@ -178,7 +184,7 @@ npm start
 
 1. Clone the Frontend repository from GitHub:
 ```
-git clone https://github.com/ThomasDgny/order-book.gitt
+git clone https://github.com/ThomasDgny/order-book.git
 ```
 
 3. Navigate into the Frontend project directory:
@@ -198,6 +204,9 @@ npm start
 
 
 Your backend server should now be running and listening for requests on `localhost:4000`.
+
+- Server: [Server Repo](https://github.com/ThomasDgny/order-book-server)
+
 
 ## Conclusion
 
