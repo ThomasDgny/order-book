@@ -1,5 +1,5 @@
 import { TimeFrameKey } from "../../../types/types";
-import ChartComponent from "../chart/Chart";
+import CandleChart from "../chart/CandleChart";
 import OrderForm from "../orderForm/OrderForm";
 import TimeFrameSelector from "./TimeFrameSelector";
 
@@ -20,7 +20,7 @@ export default function ChartSection({
             switchTimeFrame={switchTimeFrame}
             handleTimeFrameChange={handleTimeFrameChange}
           />
-          <ChartComponent coin={selectedPair} time={switchTimeFrame} />
+          <CandleChart coin={selectedPair} time={switchTimeFrame} />
         </div>
         <div className="p-8">
           <OrderForm />
