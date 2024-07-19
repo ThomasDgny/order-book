@@ -7,9 +7,7 @@ export const manageArraySize = (
   pair: string,
   maxSize: number = 15
 ): OrderBookEntry[] => {
-  let combined = [...newArray, ...prevArray].sort(
-    (a: OrderBookEntry, b: OrderBookEntry) => a.price - b.price
-  );
+  let combined = [...newArray, ...prevArray]
   return combined.slice(0, maxSize);
 };
 
