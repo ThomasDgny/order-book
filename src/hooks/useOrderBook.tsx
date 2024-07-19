@@ -27,8 +27,8 @@ export const useOrderBook = (selectedPair: string) => {
   useEffect(() => {
     const socket = io(BACKEND_BASE_API);
     const handleOrderBookUpdate = (data: OrderBookUpdate) => {
-      setCurrentBids((prevBids) => manageArraySize(prevBids, data.bids, data.pair));
-      setCurrentAsks((prevAsks) => manageArraySize(prevAsks, data.asks, data.pair));
+      setCurrentBids((prevBids) => manageArraySize(prevBids, data.bids));
+      setCurrentAsks((prevAsks) => manageArraySize(prevAsks, data.asks));
       setCurrentPair(data.pair); 
       setLoading(false);
     };

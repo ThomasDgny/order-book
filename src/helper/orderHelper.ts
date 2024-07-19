@@ -4,7 +4,6 @@ import { Order } from "../types/types";
 export const manageArraySize = (
   prevArray: OrderBookEntry[],
   newArray: OrderBookEntry[],
-  pair: string,
   maxSize: number = 15
 ): OrderBookEntry[] => {
   let combined = [...newArray, ...prevArray]
